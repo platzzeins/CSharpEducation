@@ -65,7 +65,6 @@ namespace ChatBot
                 "4. To interrupt the execution of a program."
             };
             var userAnswer = RequestNumber();
-            var isUserAnswerCorrect = false;
             
             Console.WriteLine("Let's test your programming knowledge.");
             Console.WriteLine("Why do we use methods?");
@@ -75,7 +74,7 @@ namespace ChatBot
             }
 
 
-            while (!isUserAnswerCorrect)
+            while (true)
             {
                 switch (userAnswer)
                 {
@@ -90,8 +89,7 @@ namespace ChatBot
                     case 2:
                         Console.WriteLine("Completed, have a nice day!");
                         Console.WriteLine("Congratulations, have a nice day!");
-                        isUserAnswerCorrect = true;
-                        break;
+                        return;
                 }
             }
             
