@@ -23,8 +23,7 @@ namespace ChatBot
         public void UserNameWelcome()
         {
             Console.WriteLine("Please, remind me your name.");
-            Console.Write(">");
-            _userName = Console.ReadLine();
+            _userName = RequestUserInput();
             Console.WriteLine($"What a great name you have, {_userName}!");
         }
 
@@ -47,21 +46,10 @@ namespace ChatBot
 
         public void Counting()
         {
-            int repetitions;
-            
-            
             Console.WriteLine("Now I will prove to you that I can count to any number you want.");
-            Console.Write(">");
-            do
-            {
-                if (!int.TryParse(Console.ReadLine(), out repetitions))
-                {
-                    Console.WriteLine("Invalid value entered");
-                    Console.Write(">");
-                }
-            } while (repetitions == -1);
-
-            for (int i = 1; i <= repetitions; i++)
+            var repetitions = RequestNumber();
+            
+            for (var i = 1; i <= repetitions; i++)
             {
                 Console.WriteLine($"{i}!");
             }
@@ -69,7 +57,7 @@ namespace ChatBot
 
         public void TestFromBot()
         {
-            string[] answers = new string[]
+            var answers = new string[]
             {
                 "1. To repeat a statement multiple times.",
                 "2. To decompose a program into several small subroutines.",
@@ -102,6 +90,7 @@ namespace ChatBot
                     case 2:
                         Console.WriteLine("Completed, have a nice day!");
                         Console.WriteLine("Congratulations, have a nice day!");
+                        isUserAnswerCorrect = true;
                         break;
                 }
             }
@@ -112,14 +101,20 @@ namespace ChatBot
         {
             while (true)
             {
-                Console.Write(">");
-                var tempNumber = Console.ReadLine();
-                if (int.TryParse(tempNumber, out var returnableNumber))
+                var notParsedNumber = RequestUserInput();
+                if (int.TryParse(notParsedNumber, out var parsedNumber))
                 {
-                    return returnableNumber;
+                    return parsedNumber;
                 }
                 Console.WriteLine("Invalid value entered");
             }
+        }
+
+        private string RequestUserInput()
+        {
+            Console.Write(">");
+            var userInput = Console.ReadLine();
+            return userInput;
         }
         
     }
