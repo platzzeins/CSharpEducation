@@ -13,7 +13,8 @@
                 hangMan.PrintUserInterface();
                 hangMan.RequestCharacterFromUser();
 
-                if (hangMan.IsPreviousLetterTheSame() || !hangMan.IsWordContainsLetter()) { continue; }
+                if (hangMan.IsPreviousLetterTheSame(user.CurrentLetter)
+                    || !hangMan.IsWordContainsLetter(user.CurrentLetter)) { continue; }
                 
                 if (hangMan.IsTriesLeft)
                 {

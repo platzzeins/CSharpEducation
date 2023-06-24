@@ -12,7 +12,8 @@ public class HangMan
 
     private string _selectedWord;
     private readonly User _user;
-    public bool IsTriesLeft => _user.Tries <= 0; 
+    public bool IsTriesLeft => _user.Tries <= 0;
+    public string UserWordDisplay => string.Join("", _user.Word);
     
     public HangMan(User user)
     {
@@ -51,7 +52,7 @@ public class HangMan
 
             _user.PreviousLetter = _user.CurrentLetter;
             _user.CurrentLetter = userReadLine[0];
-            OpenLettersInWord();
+            OpenLettersInWord(_user.PreviousLetter);
             break;
         }
     }
@@ -59,13 +60,13 @@ public class HangMan
     ///<summary>
     ///Replacing underscore with letter that user guessed 
     ///</summary>
-    private void OpenLettersInWord()
+    private void OpenLettersInWord(char letter)
     {
         for (var i = 0; i < _selectedWord.Length; i++)
         {
-            if (_selectedWord[i] == _user.CurrentLetter)
+            if (_selectedWord[i] == letter)
             {
-                _user.Word[i] = _user.CurrentLetter;
+                _user.Word[i] = letter;
             }
         }
     }
@@ -75,7 +76,7 @@ public class HangMan
     ///</summary>
     public void PrintUserInterface()
     {
-        Console.WriteLine($"Current word: {string.Join("", _user.Word)}");
+        Console.WriteLine($"Current word: {UserWordDisplay}");
         Console.WriteLine($"Tries left: {_user.Tries}");
     }
 
@@ -100,30 +101,22 @@ public class HangMan
     ///<summary>
     ///Checking if Word contains Letter in selected word
     ///</summary>
-    public bool IsWordContainsLetter()
+    public bool IsWordContainsLetter(char letter)
     {
-        if (!_selectedWord.Contains(_user.CurrentLetter))
-        {
-            _user.Tries --;
-            Console.WriteLine("This word does not contain this letter");
-            return false;
-        }
-
-        return true;
+        if (_selectedWord.Contains(letter)) return true;
+        _user.Tries --;
+        Console.WriteLine("This word does not contain this letter");
+        return false;
     }
 
     ///<summary>
     ///Checking if previous letter and current typed letter is the same
     ///</summary>
-    public bool IsPreviousLetterTheSame()
+    public bool IsPreviousLetterTheSame(char letter)
     {
-        if (_user.CurrentLetter == _user.PreviousLetter)
-        {
-            Console.WriteLine("No improvement!");
-            return true;
-        }
-
-        return false;
+        if (letter != _user.PreviousLetter) return false;
+        Console.WriteLine("No improvement!");
+        return true;
     }
     
     ///<summary>
@@ -136,12 +129,7 @@ public class HangMan
             return false;
         }
 
-        var joinedUserWord = string.Join("", _user.Word);
-        if (joinedUserWord != _selectedWord)
-        {
-            return false;
-        }
-        return true;
+        return UserWordDisplay == _selectedWord;
     }
 
     ///<summary>
