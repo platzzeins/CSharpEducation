@@ -12,7 +12,7 @@ public class HangMan
 
     private string _selectedWord;
     private readonly User _user;
-    public readonly Func<int, bool> IsTriesLeft = tries => tries == 0; 
+    public bool IsTriesLeft => _user.Tries <= 0; 
     
     public HangMan(User user)
     {
@@ -50,7 +50,7 @@ public class HangMan
             }
 
             _user.PreviousLetter = _user.CurrentLetter;
-            _user.CurrentLetter = userReadLine.ToCharArray()[0];
+            _user.CurrentLetter = userReadLine[0];
             OpenLettersInWord();
             break;
         }

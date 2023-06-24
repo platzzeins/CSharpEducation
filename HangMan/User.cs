@@ -2,8 +2,8 @@ namespace HangMan;
 
 public class User
 {
-    internal char[] Word;
-    internal int Tries;
-    internal char CurrentLetter;
-    internal char PreviousLetter;
+    internal char[] Word { get; set; }
+    internal int Tries { get; set; }
+    internal char CurrentLetter { get; set; }
+    internal char PreviousLetter { get; set; }
 }

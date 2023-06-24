@@ -15,7 +15,7 @@
 
                 if (hangMan.IsPreviousLetterTheSame() || !hangMan.IsWordContainsLetter()) { continue; }
                 
-                if (hangMan.IsTriesLeft(user.Tries))
+                if (hangMan.IsTriesLeft)
                 {
                     hangMan.PrintLoseEndUserInterface();
                     break;
