@@ -4,7 +4,7 @@ public class DinnerPartyDictVersion
 {
     private Dictionary<string, int> _friends;
     private int _totalAmount;
-    private KeyValuePair<string, int>? _luckyOne;
+    private string? _luckyOneName;
     private int _numberOfFriends;
 
     /// <summary>
@@ -28,7 +28,7 @@ public class DinnerPartyDictVersion
         for (var i = 0; i < _numberOfFriends; i++)
         {
             Console.Write(">");
-            var name = Console.ReadLine();
+            var name = Console.ReadLine().Trim();
             _friends.Add(name, 0);
         }
     }
@@ -61,11 +61,11 @@ public class DinnerPartyDictVersion
     public void SetPartedAmountToFriends()
     {
         var names = new List<string>(_friends.Keys);
-        if (_luckyOne != null)
+        if (_luckyOneName != null)
         {
             foreach (var name in names)
             {
-                if (_luckyOne.Value.Value == _friends[name]) { continue; }
+                if (_luckyOneName == name) { continue; }
                 _friends[name] = _totalAmount / (_numberOfFriends - 1);
             }
         }
@@ -85,8 +85,7 @@ public class DinnerPartyDictVersion
     {
         var names = new List<string>(_friends.Keys);
         var index = Random.Shared.Next(names.Count);
-        var nameOfLuckyOne = names[index];
-        _luckyOne = new KeyValuePair<string, int>(nameOfLuckyOne, 0);
+        _luckyOneName = names[index];
     }
 
     /// <summary>
