@@ -1,6 +1,6 @@
 namespace DinnerParty;
 
-public class DinnerParty
+public class DinnerParty : IDinner
 {
     private int _totalAmount;
     private int _numberOfFriends;
@@ -100,8 +100,8 @@ public class DinnerParty
     {
         while (true)
         {
-            var answer = Console.ReadLine().Trim();
-            if (answer.ToLower() == "yes" || answer.ToLower() == "no")
+            var answer = Console.ReadLine().Trim().ToLower();
+            if (answer == "yes" || answer == "no")
             {
                 return answer.ToLower();
             }

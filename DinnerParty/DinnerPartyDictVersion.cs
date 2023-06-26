@@ -1,6 +1,6 @@
 namespace DinnerParty;
 
-public class DinnerPartyDictVersion
+public class DinnerPartyDictVersion : IDinner
 {
     private Dictionary<string, int> _friends;
     private int _totalAmount;
@@ -24,19 +24,31 @@ public class DinnerPartyDictVersion
     /// </summary>
     public void RequestFriends()
     {
+        _friends = new Dictionary<string, int>();
         Console.WriteLine("Enter each friends` name");
         for (var i = 0; i < _numberOfFriends; i++)
         {
             Console.Write(">");
             var name = Console.ReadLine().Trim();
+            if (CheckNameInFriendList(name))
+            {
+                Console.WriteLine("This name is already added. Input another one!");
+                i--;
+                continue;
+            }
             _friends.Add(name, 0);
         }
+    }
+
+    public bool CheckNameInFriendList(string name)
+    {
+        return !_friends.ContainsKey(name);
     }
 
     /// <summary>
     /// Requesting total amount of money
     /// </summary>
-    public void RequestTotalMoney()
+    public void RequestTotalAmount()
     {
         Console.WriteLine("Enter the total amount:");
         _totalAmount = DinnerParty.RequestNumberFromUser();
@@ -60,10 +72,9 @@ public class DinnerPartyDictVersion
     /// </summary>
     public void SetPartedAmountToFriends()
     {
-        var names = new List<string>(_friends.Keys);
         if (_luckyOneName != null)
         {
-            foreach (var name in names)
+            foreach (var name in _friends.Keys)
             {
                 if (_luckyOneName == name) { continue; }
                 _friends[name] = _totalAmount / (_numberOfFriends - 1);
@@ -71,7 +82,7 @@ public class DinnerPartyDictVersion
         }
         else
         {
-            foreach (var name in names)
+            foreach (var name in _friends.Keys)
             {
                 _friends[name] = _totalAmount / _numberOfFriends;
             }
