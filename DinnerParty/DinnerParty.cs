@@ -1,5 +1,3 @@
-using System.Runtime.InteropServices.JavaScript;
-
 namespace DinnerParty;
 
 public class DinnerParty
@@ -7,22 +5,22 @@ public class DinnerParty
     private int _totalAmount;
     private int _numberOfFriends;
     private Friend[] _friends;
-    private Friend _luckyOne;
+    private Friend? _luckyOne;
 
     /// <summary>
     /// Requesting quantity of friends from user
     /// </summary>
-    public void RequestNumberOfFriends()
+    public bool RequestNumberOfFriends()
     {
         Console.WriteLine("Enter the number of friends joining (including you):");
         _numberOfFriends = RequestNumberFromUser();
         if (_numberOfFriends <= 0)
         {
             Console.WriteLine("No one is joining for the party");
-            Environment.Exit(0);
+            return false;
         }
         _friends = new Friend[_numberOfFriends];
-        RequestFriends();
+        return true;
     }
 
     /// <summary>
@@ -60,7 +58,6 @@ public class DinnerParty
         {
             ChooseLuckyOne();
         }
-        SetPartedAmountToFriends();
     }
 
     /// <summary>
@@ -99,11 +96,11 @@ public class DinnerParty
     /// Requesting answer from user
     /// </summary>
     /// <returns>String(yes || no)</returns>
-    public string RequestAnswerFromUser()
+    public static string RequestAnswerFromUser()
     {
         while (true)
         {
-            var answer = Console.ReadLine();
+            var answer = Console.ReadLine().Trim();
             if (answer.ToLower() == "yes" || answer.ToLower() == "no")
             {
                 return answer.ToLower();
@@ -128,12 +125,12 @@ public class DinnerParty
     /// Requesting any number from user
     /// </summary>
     /// <returns>Integer</returns>
-    public int RequestNumberFromUser()
+    public static int RequestNumberFromUser()
     {
         while (true)
         {
             Console.Write(">");
-            var userInput = Console.ReadLine();
+            var userInput = Console.ReadLine().Trim();
             if (int.TryParse(userInput, out var parsedNumber))
             {
                 return parsedNumber;
