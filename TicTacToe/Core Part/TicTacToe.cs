@@ -4,10 +4,11 @@ namespace TicTacToe;
 
 public class TicTacToe
 {
-    public string[][] Board = new string[3][];
-    public string UserSign;
-    public string ComputerSign;
-    public string Status;
+    public Sign[][] Board = new Sign[3][];
+    public Sign UserSign;
+    public Sign ComputerSign;
+    public Player Status;
+    private WinCells? _winCells;
     private readonly Random _rand = new Random();
     
     public TicTacToe()
@@ -18,18 +19,18 @@ public class TicTacToe
     
     private void AssignStatusAndSigns()
     {
-        var players = new string[] {"User", "Computer" };
-        var index = _rand.Next(players.Length);
-        Status = players[index];
-        if (Status == "User")
+        var players = Enum.GetValues(typeof(Player));
+        Status = (Player) players.GetValue(_rand.Next(players.Length));
+        switch (Status)
         {
-            UserSign = "X";
-            ComputerSign = "O";
-        }
-        else
-        {
-            UserSign = "O";
-            ComputerSign = "X";
+            case Player.Computer:
+                UserSign = Sign.O;
+                ComputerSign = Sign.X;
+                break;
+            case Player.User:
+                UserSign = Sign.X;
+                ComputerSign = Sign.O;
+                break;
         }
     }
 
@@ -44,11 +45,13 @@ public class TicTacToe
 
     public string IterateThroughLines()
     {
-        foreach (var line in Board)
+        for (var index = 0; index < Board.Length; index++)
         {
+            var line = Board[index];
             var winner = CheckQuantityOfSigns(line);
             if (winner != "None")
             {
+                _winCells = new WinCells(index, 0, index, 1, index, 2);
                 return winner;
             }
         }
@@ -60,7 +63,7 @@ public class TicTacToe
     {
         for (var i = 0; i < Board.Length; i++)
         {
-            var line = new string[Board[i].Length];
+            var line = new Sign[Board[i].Length];
             for (var j = 0; j < Board[i].Length; j++)
             {
                 line[j] = Board[j][i];
@@ -69,6 +72,7 @@ public class TicTacToe
             var winner = CheckQuantityOfSigns(line);
             if (winner != "None")
             {
+                _winCells = new WinCells(0, i, 1, i, 2, i);
                 return winner;
             }
         }
@@ -78,31 +82,38 @@ public class TicTacToe
     public string IterateThroughDiagonals()
     {
         var board = Board;
-        var line = new string[Board.Length];
+        var line = new Sign[Board.Length];
+        var index = 0;
+        
         
         for (var i = 0; i < board.Length; i++)
         {
+            index = i;
             line[i] = board[i][i];
         }
 
         var winner = CheckQuantityOfSigns(line);
         if (winner != "None")
         {
+            _winCells = new WinCells(index);
             return winner;
         }
 
         var reversedBoardList = board.Reverse().ToList();
         var reversedBoardArray = reversedBoardList.Select(row => row.ToArray()).ToArray();
+        // var index = 0;
         board = reversedBoardArray;
         
         for (var i = 0; i < board.Length; i++)
         {
+            index = i;
             line[i] = board[i][i];
         }
         
         winner = CheckQuantityOfSigns(line);
         if (winner != "None")
         {
+            _winCells = new WinCells(index);
             return winner;
         }
 
@@ -118,7 +129,7 @@ public class TicTacToe
         {
             foreach (var cell in line)
             {
-                if (cell == "_")
+                if (cell == Sign._)
                 {
                     downstrokes++;
                 }
@@ -129,7 +140,7 @@ public class TicTacToe
     }
     
     
-    public string CheckQuantityOfSigns(string[] line)
+    public string CheckQuantityOfSigns(Sign[] line)
     {
         var countComputerSign = line.Count(sign => sign == ComputerSign);
         var countUserSign = line.Count(sign => sign == UserSign);
@@ -144,12 +155,22 @@ public class TicTacToe
     {
         for (var i = 0; i < Board.Length; i++)
         {
-            Board[i] = new string[3];
-            var signs = new string[] { "O", "X" };
+            Board[i] = new Sign[3];
             for (var j = 0; j < Board[i].Length; j++)
             {
-                Board[i][j] = "_";
+                Board[i][j] = Sign._;
             }
         }
     }
+
+    public bool IsWinCell(int x, int y)
+    {
+        if (_winCells is null)
+        {
+            return false;
+        }
+
+        return _winCells.IsWinCell(x, y);
+    }
+    
 }

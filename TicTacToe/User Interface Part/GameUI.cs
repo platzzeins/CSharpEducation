@@ -2,15 +2,45 @@ namespace TicTacToe;
 
 public class GameUI
 {
-    public string[][] Board;
+    private TicTacToe _ticTacToe;
+
+    public GameUI(TicTacToe ticTacToe)
+    {
+        _ticTacToe = ticTacToe;
+    }
 
     public void PrintBoard()
     {
-        Console.WriteLine("---------");
-        foreach (var line in Board)
+        Console.Clear();
+        PrintBar();
+        for (var j = 0; j < _ticTacToe.Board.Length; j++)
         {
+            var line = _ticTacToe.Board[j];
             for (var i = 0; i < line.Length; i++)
             {
+                var userSign = _ticTacToe.UserSign;
+                var computerSign = _ticTacToe.ComputerSign;
+
+                if (_ticTacToe.IsWinCell(j, i))
+                {
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
+                else
+                {
+                    if (line[i] == userSign)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Magenta;
+                    }
+                    else if (line[i] == computerSign)
+                    {
+                        Console.ForegroundColor = ConsoleColor.DarkBlue;
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                    }
+                }
+
                 switch (i)
                 {
                     case 0:
@@ -23,10 +53,22 @@ public class GameUI
                         Console.Write(line[i]);
                         break;
                 }
+
+                Console.ResetColor();
             }
+
+            Console.ResetColor();
             Console.WriteLine();
         }
+
+        PrintBar();
+    }
+
+    private void PrintBar()
+    {
+        Console.ForegroundColor = ConsoleColor.Magenta;
         Console.WriteLine("---------");
+        Console.ResetColor();
     }
     
     
@@ -65,7 +107,7 @@ public class GameUI
                     throw new FieldException("Coordinates have to be less than 4");
                 }
 
-                if (Board[x - 1][y - 1] != "_")
+                if (_ticTacToe.Board[x - 1][y - 1] != Sign._)
                 {
                     throw new FieldException("This field is already occupied");
                 }

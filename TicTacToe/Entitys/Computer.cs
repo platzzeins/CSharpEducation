@@ -3,7 +3,7 @@ namespace TicTacToe;
 public class Computer
 {
     private readonly TicTacToe _ticTacToe;
-    private readonly string _computerSign;
+    private readonly Sign _computerSign;
 
     public Computer(TicTacToe ticTacToe)
     {
@@ -20,13 +20,13 @@ public class Computer
         {
             for (var j = 0; j < length; j++)
             {
-                if (_ticTacToe.Board[i][j] != "_") continue;
+                if (_ticTacToe.Board[i][j] != Sign._) continue;
                 var force = new Force(i, j);
                 forces.Add(force);
             }
         }
 
-        CountTheForce(ref forces);
+        CountTheForce(forces);
         
         // Debugging code
         // Console.WriteLine($"Computer sign: {_computerSign}");
@@ -37,60 +37,47 @@ public class Computer
 
         var maxForce = GetMaxForce(forces);
 
-        return new int[] { maxForce.GetX(), maxForce.GetY() };
+        return new int[] { maxForce.XCoordinate, maxForce.YCoordinate };
     }
 
     private Force GetMaxForce(List<Force> forces)
     {
-        return forces.MaxBy(f => f.GetTotalSum());
+        return forces.MaxBy(f => f.TotalForce);
     }
     
     /// <summary>
     /// Counting the XLine, YLine and Diagonal force for each cell
     /// </summary>
     /// <param name="forces"></param>
-    private void CountTheForce(ref List<Force> forces)
+    private void CountTheForce(List<Force> forces)
     {
         foreach (var force in forces)
         {
-            var x = force.GetX();
-            var y = force.GetY();
+            var x = force.XCoordinate;
+            var y = force.YCoordinate;
+
+
+            force.XLine += IterateThroughLines(x);
             
+            force.YLine += IterateThroughColumns(y);
+
             
-            foreach (var cell in _ticTacToe.Board[x])
+            if ((x == 2 && y == 0) || (x == 0 && y == 2))
             {
-                if (cell == _computerSign)
-                {
-                    force.xLine += 6;
-                }
+                force.Diagonal += IterateThroughDiagonals(_ticTacToe.Board, Diagonal.Side);
             }
             
-            foreach (var line in _ticTacToe.Board)
+            if ((x == 0 && y == 0) || (x == 2 && y == 2))
             {
-                if (line[y] == _computerSign)
-                {
-                    force.yLine += 6;
-                }
-            }
-
-            if ((x == 0 && y == 0) || (x == 0 && y == 2) || (x == 2 && y == 0) || (x == 2 && y == 2))
-            {
-                var board = _ticTacToe.Board;
-                if ((x == 2 && y == 0) || (x == 0 && y == 2))
-                {
-                    board = board.Reverse().ToArray();
-                }
-
-                force.diagonal = IterateThroughDiagonals(board);
+                force.Diagonal += IterateThroughDiagonals(_ticTacToe.Board, Diagonal.General);
             }
 
             if (x == 1 && y == 1)
             {
                 var board = _ticTacToe.Board;
-                force.diagonal = IterateThroughDiagonals(board);
+                force.Diagonal += IterateThroughDiagonals(board, Diagonal.General);
                 
-                board = board.Reverse().ToArray();
-                force.diagonal = IterateThroughDiagonals(board);
+                force.Diagonal += IterateThroughDiagonals(board, Diagonal.Side);
             }
             
         }
@@ -98,45 +85,51 @@ public class Computer
 
     public int IterateThroughLines(int xCoordinate)
     {
-        var lineWithSigns = new string[3];
+        var lineWithSigns = new Sign[3];
 
         for (var i = 0; i < _ticTacToe.Board[xCoordinate].Length; i++)
         {
             lineWithSigns[i] = _ticTacToe.Board[xCoordinate][i];
         }
         
-        var result = CountSignsInLine(lineWithSigns);
-
-        return result;
+        return CountSignsInLine(lineWithSigns);
     }
 
     public int IterateThroughColumns(int yCoordinate)
     {
-        var lineWithSigns = new string[3];
+        var lineWithSigns = new Sign[3];
 
         for (var i = 0; i < _ticTacToe.Board.Length; i++)
         {
             lineWithSigns[i] = _ticTacToe.Board[i][yCoordinate];
         }
 
-        var result = CountSignsInLine(lineWithSigns);
-
-        return result;
+        return CountSignsInLine(lineWithSigns);
     }
     
-    public int IterateThroughDiagonals(string[][] board)
+    public int IterateThroughDiagonals(Sign[][] board, Diagonal diagonal)
     {
+        var lineWithSigns = new Sign[3];
         
-        var lineWithSigns = new string[3];
         
-        for (var i = 0; i < board.Length; i++)
+        if (diagonal == Diagonal.General)
         {
-            lineWithSigns[i] = board[i][i];
+            for (var i = 0; i < board.Length; i++)
+            {
+                lineWithSigns[i] = board[i][i];
+            }
         }
-        
-        var result = CountSignsInLine(lineWithSigns);
-        
-        return result;
+        if (diagonal == Diagonal.Side)
+        {
+            var i = 2;
+            foreach (var line in _ticTacToe.Board)
+            {
+                lineWithSigns[i] = line[i];
+                i--;
+            }
+        }
+
+        return CountSignsInLine(lineWithSigns);
     }
 
     
@@ -145,7 +138,7 @@ public class Computer
     /// </summary>
     /// <param name="lineWithSigns"></param>
     /// <returns>result: int - How much force will be added</returns>
-    private int CountSignsInLine(string[] lineWithSigns)
+    private int CountSignsInLine(Sign[] lineWithSigns)
     {
         var result = 0;
         var resultForComputerSign = lineWithSigns.Count(sign => sign == _computerSign);
@@ -153,12 +146,12 @@ public class Computer
 
         if (resultForComputerSign == 2)
         {
-            result = 6;
+            result = 12;
         }
-
+        
         if (resultForUserSign == 2)
         {
-            result = 15;
+            result = 11;
         }
 
         return result;

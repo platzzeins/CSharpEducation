@@ -6,29 +6,28 @@
         {
             var ticTacToe = new TicTacToe();
             var computer = new Computer(ticTacToe);
-            var gameUi = new GameUI();
+            var gameUi = new GameUI(ticTacToe);
             
             while (true)
             {
-                gameUi.Board = ticTacToe.Board;
-                gameUi.PrintBoard();
-
                 if (IsEndSituation(ticTacToe, gameUi))
                 {
                     break;
                 }
+               
+                gameUi.PrintBoard();
                 
                 switch (ticTacToe.Status)
                 {
-                    case "User":
+                    case Player.User:
                         var userCoordinations = gameUi.InputCoordinations();
                         ticTacToe.MakeAMove(userCoordinations[0], userCoordinations[1], Player.User);
-                        ticTacToe.Status = "Computer";
+                        ticTacToe.Status = Player.Computer;
                         break;
-                    case "Computer":
+                    case Player.Computer:
                         var coordinations = computer.GetCoordinations();
                         ticTacToe.MakeAMove(coordinations[0], coordinations[1], Player.Computer);
-                        ticTacToe.Status = "User";
+                        ticTacToe.Status = Player.User;
                         break;
                 }
             }
@@ -42,18 +41,21 @@
 
             if (lineWinner != "None")
             {
+                gameUi.PrintBoard();
                 gameUi.PrintWinEnd(lineWinner);
                 return true;
             }
 
             if (columnWinner != "None")
             {
+                gameUi.PrintBoard();
                 gameUi.PrintWinEnd(columnWinner);
                 return true;
             }
 
             if (diagonalWinner != "None")
             {
+                gameUi.PrintBoard();
                 gameUi.PrintWinEnd(diagonalWinner);
                 return true;
             }
