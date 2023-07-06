@@ -13,10 +13,10 @@ public class GameUI
     {
         Console.Clear();
         PrintBar();
-        for (var j = 0; j < _ticTacToe.Board.Length; j++)
+        for (var j = 0; j < _ticTacToe.Board.GetLength(0); j++)
         {
-            var line = _ticTacToe.Board[j];
-            for (var i = 0; i < line.Length; i++)
+            // var line = _ticTacToe.Board[j];
+            for (var i = 0; i < _ticTacToe.Board.GetLength(0); i++)
             {
                 var userSign = _ticTacToe.UserSign;
                 var computerSign = _ticTacToe.ComputerSign;
@@ -27,11 +27,11 @@ public class GameUI
                 }
                 else
                 {
-                    if (line[i] == userSign)
+                    if (_ticTacToe.Board[j, i] == userSign)
                     {
                         Console.ForegroundColor = ConsoleColor.Magenta;
                     }
-                    else if (line[i] == computerSign)
+                    else if (_ticTacToe.Board[j, i] == computerSign)
                     {
                         Console.ForegroundColor = ConsoleColor.DarkBlue;
                     }
@@ -44,13 +44,13 @@ public class GameUI
                 switch (i)
                 {
                     case 0:
-                        Console.Write($"| {line[i]} ");
+                        Console.Write($"| {_ticTacToe.Board[j, i]} ");
                         break;
                     case 2:
-                        Console.Write($" {line[i]} |");
+                        Console.Write($" {_ticTacToe.Board[j, i]} |");
                         break;
                     default:
-                        Console.Write(line[i]);
+                        Console.Write(_ticTacToe.Board[j, i]);
                         break;
                 }
 
@@ -107,7 +107,7 @@ public class GameUI
                     throw new FieldException("Coordinates have to be less than 4");
                 }
 
-                if (_ticTacToe.Board[x - 1][y - 1] != Sign._)
+                if (_ticTacToe.Board[x - 1, y - 1] != Sign._)
                 {
                     throw new FieldException("This field is already occupied");
                 }

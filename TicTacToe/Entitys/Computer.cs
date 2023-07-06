@@ -13,14 +13,14 @@ public class Computer
 
     public int[] GetCoordinations()
     {
-        var length = _ticTacToe.Board.Length;
+        var length = _ticTacToe.Board.GetLength(0);
         var forces = new List<Force>();
 
         for (var i = 0; i < length; i++)
         {
             for (var j = 0; j < length; j++)
             {
-                if (_ticTacToe.Board[i][j] != Sign._) continue;
+                if (_ticTacToe.Board[i, j] != Sign._) continue;
                 var force = new Force(i, j);
                 forces.Add(force);
             }
@@ -87,9 +87,9 @@ public class Computer
     {
         var lineWithSigns = new Sign[3];
 
-        for (var i = 0; i < _ticTacToe.Board[xCoordinate].Length; i++)
+        for (var i = 0; i < _ticTacToe.Board.GetLength(0); i++)
         {
-            lineWithSigns[i] = _ticTacToe.Board[xCoordinate][i];
+            lineWithSigns[i] = _ticTacToe.Board[xCoordinate, i];
         }
         
         return CountSignsInLine(lineWithSigns);
@@ -99,34 +99,39 @@ public class Computer
     {
         var lineWithSigns = new Sign[3];
 
-        for (var i = 0; i < _ticTacToe.Board.Length; i++)
+        for (var i = 0; i < _ticTacToe.Board.GetLength(0); i++)
         {
-            lineWithSigns[i] = _ticTacToe.Board[i][yCoordinate];
+            lineWithSigns[i] = _ticTacToe.Board[i, yCoordinate];
         }
 
         return CountSignsInLine(lineWithSigns);
     }
     
-    public int IterateThroughDiagonals(Sign[][] board, Diagonal diagonal)
+    public int IterateThroughDiagonals(Sign[,] board, Diagonal diagonal)
     {
         var lineWithSigns = new Sign[3];
         
         
         if (diagonal == Diagonal.General)
         {
-            for (var i = 0; i < board.Length; i++)
+            for (var i = 0; i < board.GetLength(0); i++)
             {
-                lineWithSigns[i] = board[i][i];
+                lineWithSigns[i] = board[i, i];
             }
         }
         if (diagonal == Diagonal.Side)
         {
             var i = 2;
-            foreach (var line in _ticTacToe.Board)
+            for (var j = 0; j < _ticTacToe.Board.GetLength(0); j++)
             {
-                lineWithSigns[i] = line[i];
+                lineWithSigns[i] = _ticTacToe.Board[j, i];
                 i--;
             }
+            // foreach (var line in _ticTacToe.Board)
+            // {
+            //     lineWithSigns[i] = line[i];
+            //     
+            // }
         }
 
         return CountSignsInLine(lineWithSigns);
