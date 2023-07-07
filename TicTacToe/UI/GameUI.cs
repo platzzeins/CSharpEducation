@@ -1,13 +1,14 @@
-namespace TicTacToe;
+using TicTacToe.Entities;
+using TicTacToe.Exceptions;
+using TicTacToe.Types;
 
-public class GameUI
+namespace TicTacToe.UI;
+
+public class GameUi
 {
-    private TicTacToe _ticTacToe;
+    private readonly Core.TicTacToe _ticTacToe;
 
-    public GameUI(TicTacToe ticTacToe)
-    {
-        _ticTacToe = ticTacToe;
-    }
+    public GameUi(Core.TicTacToe ticTacToe) => _ticTacToe = ticTacToe;
 
     public void PrintBoard()
     {
@@ -15,8 +16,7 @@ public class GameUI
         PrintBar();
         for (var j = 0; j < _ticTacToe.Board.GetLength(0); j++)
         {
-            // var line = _ticTacToe.Board[j];
-            for (var i = 0; i < _ticTacToe.Board.GetLength(0); i++)
+            for (var i = 0; i < _ticTacToe.Board.GetLength(1); i++)
             {
                 var userSign = _ticTacToe.UserSign;
                 var computerSign = _ticTacToe.ComputerSign;
@@ -41,16 +41,24 @@ public class GameUI
                     }
                 }
 
+                var cellSymbol = _ticTacToe.Board[j, i] switch
+                {
+                    Sign.Empty => "_",
+                    Sign.X => "X",
+                    Sign.O => "O",
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+
                 switch (i)
                 {
                     case 0:
-                        Console.Write($"| {_ticTacToe.Board[j, i]} ");
+                        Console.Write($"| {cellSymbol} ");
                         break;
                     case 2:
-                        Console.Write($" {_ticTacToe.Board[j, i]} |");
+                        Console.Write($" {cellSymbol} |");
                         break;
                     default:
-                        Console.Write(_ticTacToe.Board[j, i]);
+                        Console.Write(cellSymbol);
                         break;
                 }
 
@@ -70,51 +78,31 @@ public class GameUI
         Console.WriteLine("---------");
         Console.ResetColor();
     }
-    
-    
+
+
     /// <summary>
     /// Request coordination's for cell from user 
     /// </summary>
     /// <returns></returns>
     /// <exception cref="FieldException"></exception>
-    public int[] InputCoordinations()
+    public BoardPosition InputCoordinate()
     {
         while (true)
         {
             Console.Write(">");
-            var userInput = Console.ReadLine().Trim();
-            
+            var userInput = Console.ReadLine()?.Trim() ?? "";
+
             try
             {
-                if (!userInput.Contains(' '))
-                {
-                    throw new FieldException("Coordinates have to be written in this style: \"4 4\"");
-                }
-                var coordinates = userInput.Split(' ');
-                if (!int.TryParse(coordinates[0], out var x) ||
-                    !int.TryParse(coordinates[1], out var y))
-                {
-                    throw new FieldException("Not integers inputted!");
-                }
-            
-                if (x <= 0 || y <= 0)
-                {
-                    throw new FieldException("Coordinates have to be greater than 0");
-                }
-
-                if (x > 3 || y > 3)
-                {
-                    throw new FieldException("Coordinates have to be less than 4");
-                }
-
-                if (_ticTacToe.Board[x - 1, y - 1] != Sign._)
+                var position = BoardPosition.Parse(userInput);
+                if (_ticTacToe.Board[position.X, position.Y] != Sign.Empty)
                 {
                     throw new FieldException("This field is already occupied");
                 }
 
-                return new[] { x - 1, y - 1 };
+                return position;
             }
-            catch (FieldException e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }

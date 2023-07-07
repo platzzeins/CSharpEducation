@@ -1,72 +1,64 @@
-namespace TicTacToe;
+using TicTacToe.Types;
+
+namespace TicTacToe.Entities;
 
 public class Computer
 {
-    private readonly TicTacToe _ticTacToe;
+    private readonly Core.TicTacToe _ticTacToe;
     private readonly Sign _computerSign;
 
-    public Computer(TicTacToe ticTacToe)
+    public Computer(Core.TicTacToe ticTacToe)
     {
         _ticTacToe = ticTacToe;
         _computerSign = _ticTacToe.ComputerSign;
     }
 
-    public int[] GetCoordinations()
+    private List<Force> CalculateForces()
     {
-        var length = _ticTacToe.Board.GetLength(0);
         var forces = new List<Force>();
 
-        for (var i = 0; i < length; i++)
+        for (var i = 0; i < _ticTacToe.Board.GetLength(0); i++)
         {
-            for (var j = 0; j < length; j++)
+            for (var j = 0; j < _ticTacToe.Board.GetLength(1); j++)
             {
-                if (_ticTacToe.Board[i, j] != Sign._) continue;
+                if (_ticTacToe.Board[i, j] != Sign.Empty)
+                    continue;
                 var force = new Force(i, j);
                 forces.Add(force);
             }
         }
 
-        CountTheForce(forces);
-        
-        // Debugging code
-        // Console.WriteLine($"Computer sign: {_computerSign}");
-        // foreach (var force in forces)
-        // {
-        //     Console.WriteLine(force.ToString());
-        // }
-
-        var maxForce = GetMaxForce(forces);
-
-        return new int[] { maxForce.XCoordinate, maxForce.YCoordinate };
+        return forces;
     }
 
-    private Force GetMaxForce(List<Force> forces)
+    public BoardPosition GetCoordinates()
     {
-        return forces.MaxBy(f => f.TotalForce);
+        var forces = CalculateForces();
+        CountForce(forces);
+        var maxForce = forces.MaxBy(f => f.TotalForce) ?? throw new NullReferenceException();
+        return maxForce.Position;
     }
-    
+
     /// <summary>
     /// Counting the XLine, YLine and Diagonal force for each cell
     /// </summary>
     /// <param name="forces"></param>
-    private void CountTheForce(List<Force> forces)
+    private void CountForce(List<Force> forces)
     {
         foreach (var force in forces)
         {
-            var x = force.XCoordinate;
-            var y = force.YCoordinate;
-
-
-            force.XLine += IterateThroughLines(x);
+            var (x, y) = force.Position;
             
+            force.XLine += IterateThroughLines(x);
+
             force.YLine += IterateThroughColumns(y);
 
-            
+
             if ((x == 2 && y == 0) || (x == 0 && y == 2))
             {
                 force.Diagonal += IterateThroughDiagonals(_ticTacToe.Board, Diagonal.Side);
             }
-            
+
             if ((x == 0 && y == 0) || (x == 2 && y == 2))
             {
                 force.Diagonal += IterateThroughDiagonals(_ticTacToe.Board, Diagonal.General);
@@ -76,10 +68,9 @@ public class Computer
             {
                 var board = _ticTacToe.Board;
                 force.Diagonal += IterateThroughDiagonals(board, Diagonal.General);
-                
+
                 force.Diagonal += IterateThroughDiagonals(board, Diagonal.Side);
             }
-            
         }
     }
 
@@ -91,7 +82,7 @@ public class Computer
         {
             lineWithSigns[i] = _ticTacToe.Board[xCoordinate, i];
         }
-        
+
         return CountSignsInLine(lineWithSigns);
     }
 
@@ -106,12 +97,12 @@ public class Computer
 
         return CountSignsInLine(lineWithSigns);
     }
-    
+
     public int IterateThroughDiagonals(Sign[,] board, Diagonal diagonal)
     {
         var lineWithSigns = new Sign[3];
-        
-        
+
+
         if (diagonal == Diagonal.General)
         {
             for (var i = 0; i < board.GetLength(0); i++)
@@ -119,6 +110,7 @@ public class Computer
                 lineWithSigns[i] = board[i, i];
             }
         }
+
         if (diagonal == Diagonal.Side)
         {
             var i = 2;
@@ -137,7 +129,7 @@ public class Computer
         return CountSignsInLine(lineWithSigns);
     }
 
-    
+
     /// <summary>
     /// Counting signs in lines and if there two opponents` signs, add maximum force to the current computer cell
     /// </summary>
@@ -153,7 +145,7 @@ public class Computer
         {
             result = 12;
         }
-        
+
         if (resultForUserSign == 2)
         {
             result = 11;
@@ -161,5 +153,4 @@ public class Computer
 
         return result;
     }
-    
 }

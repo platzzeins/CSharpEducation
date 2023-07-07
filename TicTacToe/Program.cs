@@ -1,12 +1,15 @@
-﻿namespace TicTacToe
+﻿using TicTacToe.Entities;
+using TicTacToe.Types;
+using TicTacToe.UI;
+namespace TicTacToe
 {
-    internal class Program
+    internal static class Program
     {
-        public static void Main(string[] args)
+        public static void Main()
         {
-            var ticTacToe = new TicTacToe();
+            var ticTacToe = new Core.TicTacToe();
             var computer = new Computer(ticTacToe);
-            var gameUi = new GameUI(ticTacToe);
+            var gameUi = new GameUi(ticTacToe);
             
             while (true)
             {
@@ -17,23 +20,31 @@
                
                 gameUi.PrintBoard();
                 
-                switch (ticTacToe.Status)
+                switch (ticTacToe.CurrentPlayer)
                 {
                     case Player.User:
-                        var userCoordinations = gameUi.InputCoordinations();
-                        ticTacToe.MakeAMove(userCoordinations[0], userCoordinations[1], Player.User);
-                        ticTacToe.Status = Player.Computer;
+                    {
+                        var userCoordinations = gameUi.InputCoordinate();
+                        var (x, y) = userCoordinations;
+                        ticTacToe.MakeAMove(x, y, Player.User);
+                        ticTacToe.CurrentPlayer = Player.Computer;
                         break;
+                    }
                     case Player.Computer:
-                        var coordinations = computer.GetCoordinations();
-                        ticTacToe.MakeAMove(coordinations[0], coordinations[1], Player.Computer);
-                        ticTacToe.Status = Player.User;
+                    {
+                        var coordinations = computer.GetCoordinates();
+                        var (x, y) = coordinations;
+                        ticTacToe.MakeAMove(x, y, Player.Computer);
+                        ticTacToe.CurrentPlayer = Player.User;
                         break;
+                    }
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
         }
 
-        private static bool IsEndSituation(TicTacToe ticTacToe, GameUI gameUi)
+        private static bool IsEndSituation(Core.TicTacToe ticTacToe, GameUi gameUi)
         {
             var lineWinner = ticTacToe.IterateThroughLines();
             var columnWinner = ticTacToe.IterateThroughColumns();

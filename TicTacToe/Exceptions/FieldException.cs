@@ -1,4 +1,4 @@
-namespace TicTacToe;
+namespace TicTacToe.Exceptions;
 
 public class FieldException : Exception
 {

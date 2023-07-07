@@ -1,27 +1,28 @@
-using System.Security.AccessControl;
+using TicTacToe.Entities;
+using TicTacToe.Types;
 
-namespace TicTacToe;
+namespace TicTacToe.Core;
 
 public class TicTacToe
 {
-    public Sign[,] Board = new Sign[3,3];
+    private readonly Random _rand = new();
+    public readonly Sign[,] Board = new Sign[3,3];
     public Sign UserSign;
     public Sign ComputerSign;
-    public Player Status;
+    public Player CurrentPlayer;
+    
     private WinCells? _winCells;
-    private readonly Random _rand = new Random();
     
     public TicTacToe()
     {
-        CreateTheBoard();
-        AssignStatusAndSigns();
+        InitializeStatusAndSigns();
     }
-    
-    private void AssignStatusAndSigns()
+
+    private void InitializeStatusAndSigns()
     {
-        var players = Enum.GetValues(typeof(Player));
-        Status = (Player) players.GetValue(_rand.Next(players.Length));
-        switch (Status)
+        CurrentPlayer = (Player)_rand.Next(2);
+        
+        switch (CurrentPlayer)
         {
             case Player.Computer:
                 UserSign = Sign.O;
@@ -31,6 +32,8 @@ public class TicTacToe
                 UserSign = Sign.X;
                 ComputerSign = Sign.O;
                 break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
     }
 
@@ -164,7 +167,7 @@ public class TicTacToe
         {
             for (var j = 0; j < Board.GetLength(0); j++)
             {
-                if (Board[i, j] == Sign._)
+                if (Board[i, j] == Sign.Empty)
                 {
                     downstrokes++;
                 }
@@ -197,16 +200,6 @@ public class TicTacToe
         return countUserSign == 3 ? "User" : "None";
     }
 
-    private void CreateTheBoard()
-    {
-        for (var i = 0; i < Board.GetLength(0); i++)
-        {
-            for (var j = 0; j < Board.GetLength(1); j++)
-            {
-                Board[i, j] = Sign._;
-            }
-        }
-    }
 
     public bool IsWinCell(int x, int y)
     {
