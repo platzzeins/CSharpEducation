@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatBot", "ChatBot\ChatBot.csproj", "{5FD9CE64-6193-48B4-9F42-708770AC7465}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicTacToe", "TicTacToe\TicTacToe.csproj", "{80EB52DB-FB6A-4FE0-911C-64709332E7A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{5FD9CE64-6193-48B4-9F42-708770AC7465}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FD9CE64-6193-48B4-9F42-708770AC7465}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5FD9CE64-6193-48B4-9F42-708770AC7465}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80EB52DB-FB6A-4FE0-911C-64709332E7A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80EB52DB-FB6A-4FE0-911C-64709332E7A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80EB52DB-FB6A-4FE0-911C-64709332E7A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80EB52DB-FB6A-4FE0-911C-64709332E7A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
