@@ -1,4 +1,5 @@
 ﻿using CoffeeMachine.Core;
+using CoffeeMachine.Types;
 using CoffeeMachine.UI;
 
 namespace CoffeeMachine
@@ -13,10 +14,11 @@ namespace CoffeeMachine
 
             while (true)
             {
-                if (!machineUi.GeneralMenu())
+                if (machineCore.MachineState == State.Exiting)
                 {
                     break;
                 }  
+                machineUi.GeneralMenu();
             }
         }
     }

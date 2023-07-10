@@ -12,7 +12,7 @@ public class MachineUi
     // private readonly Coffee _cappuccino = new Coffee(200, 100, 12, 6);
     public MachineUi(MachineCore machineCore) => _machineCore = machineCore;
     
-    public bool GeneralMenu()
+    public void GeneralMenu()
     {
         while (true)
         {
@@ -22,19 +22,20 @@ public class MachineUi
             switch (response){
                 case "buy":
                     PrintSelectionScreen();
-                    return true;
+                    break;
                 case "fill": 
                     PrintFillActionScreen();
-                    return true;
+                    break;
                 case "take":
                     PrintGaveMoneyScreen();
-                    return true;
+                    break;
                 case "remaining":
                     PrintRemainingScreen();
-                    return true;
-                case "exit": 
+                    break;
+                case "exit":
+                    _machineCore.MachineState = State.Exiting;
                     Console.WriteLine("Goodbye!");
-                    return false;
+                    break;
                 default:
                     Console.WriteLine("Incorrect value passed");
                     break;
@@ -58,13 +59,13 @@ public class MachineUi
             switch (userInput)
             {
                 case "latte":
-                    _machineCore.BuyDrink(CoffeeName.Latte);
+                    _machineCore.BuyDrink(0);
                     break;
                 case "espresso":
-                    _machineCore.BuyDrink(CoffeeName.Espresso);
+                    _machineCore.BuyDrink(1);
                     break;
                 case "cappuccino":
-                    _machineCore.BuyDrink(CoffeeName.Cappuccino);
+                    _machineCore.BuyDrink(2);
                     break;
                 default:
                     Console.WriteLine("Sorry, but there is no such coffee in our machine");
@@ -99,6 +100,7 @@ public class MachineUi
 
     private void PrintRemainingScreen()
     {
+        _machineCore.MachineState = State.Remaining;
         Console.WriteLine("The coffee machine has: ");
         Console.WriteLine($"{_machineCore.Water} ml of water");
         Console.WriteLine($"{_machineCore.Milk} ml of milk");
@@ -158,7 +160,7 @@ public class MachineUi
             case State.Ready:
                 Console.WriteLine("Here is your order!...");
                 break;
-            case State.AddedComponents:
+            case State.Filling:
                 Console.WriteLine("You added components to CoffeeMachine...");
                 break;
             default:

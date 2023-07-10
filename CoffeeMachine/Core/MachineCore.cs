@@ -7,12 +7,13 @@ public class MachineCore
 {
     public delegate void StateHandler(State state);
     public event StateHandler? Notify;
+    public State MachineState = State.Start;
     public int Water { get; private set; }
     public int Milk { get; private set; }
     public int Beans { get; private set; }
     public int Cups { get; private set; }
     public int Money { get; private set; }
-    public List<Coffee> Coffees = new List<Coffee>();
+    private readonly List<Coffee> _coffees = new List<Coffee>();
 
 
     public MachineCore()
@@ -22,26 +23,15 @@ public class MachineCore
         Beans = 120;
         Cups = 9;
         Money = 50;
-        Coffees.Add(new Coffee(CoffeeName.Latte, 350, 75, 20, 7));
-        Coffees.Add(new Coffee(CoffeeName.Espresso, 250, 0, 16, 4));
-        Coffees.Add(new Coffee(CoffeeName.Cappuccino, 200, 100, 12, 6));
+        _coffees.Add(new Coffee(CoffeeName.Latte, 350, 75, 20, 7));
+        _coffees.Add(new Coffee(CoffeeName.Espresso, 250, 0, 16, 4));
+        _coffees.Add(new Coffee(CoffeeName.Cappuccino, 200, 100, 12, 6));
     }
 
-    public void BuyDrink(CoffeeName coffeeName)
+    public void BuyDrink(int coffeeIndex)
     {
-        var drink = new Coffee(CoffeeName.Unknown, 0 ,0 ,0 ,0);
-        foreach (var coffee in Coffees)
-        {
-            if (coffee.CoffeeName != coffeeName) continue;
-            drink = coffee;
-            break;
-        }
-
-        if (drink.CoffeeName == CoffeeName.Unknown)
-        {
-            throw new UnknownCoffeeException();
-            return;
-        }
+        MachineState = State.Buying;
+        var drink = _coffees[coffeeIndex];
         
         if (!IsAvailableForMaking(drink))
         {
@@ -71,20 +61,34 @@ public class MachineCore
         const int delay = 1000;
         
         Money -= drink.Price;
+        MachineState = State.Start;
         Notify?.Invoke(State.Start);
         Thread.Sleep(delay);
-        Notify?.Invoke(State.Grind);
+        
+        Beans -= drink.Beans;
+        MachineState = State.Grind;
+        Notify?.Invoke(MachineState);
         Thread.Sleep(delay);
-        Notify?.Invoke(State.Boil);
+
+        Water -= drink.Water;
+        MachineState = State.Boil;
+        Notify?.Invoke(MachineState);
         Thread.Sleep(delay);
-        Notify?.Invoke(State.PourCoffee);
+
+        MachineState = State.PourCoffee;
+        Notify?.Invoke(MachineState);
         Thread.Sleep(delay);
+        
         if (drink.Milk > 0)
         {
-            Notify?.Invoke(State.PourMilk);
+            Milk -= drink.Milk;
+            MachineState = State.PourMilk;
+            Notify?.Invoke(MachineState);
             Thread.Sleep(delay);
         }
-        Notify?.Invoke(State.Ready);
+
+        MachineState = State.Ready;
+        Notify?.Invoke(MachineState);
     }
 
     private bool IsAvailableForMaking(Coffee drink)
@@ -94,12 +98,18 @@ public class MachineCore
     
     public void FillMachine(int water, int milk, int beans, int cups)
     {
-        Notify?.Invoke(State.AddedComponents);
+        MachineState = State.Filling;
+        Notify?.Invoke(MachineState);
         Water += water;
         Milk += milk;
         Beans += beans;
         Cups += cups;
     }
 
-    public void CashOut() => Money = 0;
+    public void CashOut()
+    {
+        MachineState = State.CashOut;
+        Money = 0;
+    } 
+    
 }

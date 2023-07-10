@@ -9,5 +9,9 @@ public enum State
     PourCoffee,
     PourMilk,
     Ready,
-    AddedComponents
+    Filling,
+    Buying,
+    Exiting,
+    CashOut,
+    Remaining
 }
