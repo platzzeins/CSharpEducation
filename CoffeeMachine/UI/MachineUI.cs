@@ -1,5 +1,6 @@
 using CoffeeMachine.Core;
 using CoffeeMachine.Entities;
+using CoffeeMachine.Exceptions;
 using CoffeeMachine.Types;
 
 namespace CoffeeMachine.UI;
@@ -7,15 +8,10 @@ namespace CoffeeMachine.UI;
 public class MachineUi
 {
     private readonly MachineCore _machineCore;
-    // private readonly Coffee _latte = new Coffee( 350, 75, 20, 7);
-    // private readonly Coffee _espresso = new Coffee(250, 0, 16, 4);
-    // private readonly Coffee _cappuccino = new Coffee(200, 100, 12, 6);
     public MachineUi(MachineCore machineCore) => _machineCore = machineCore;
     
     public void GeneralMenu()
     {
-        while (true)
-        {
             Console.WriteLine("Write action (buy, fill, take, remaining, exit): ");
             Console.Write("> ");
             var response = Console.ReadLine()?.Trim().ToLower();
@@ -40,38 +36,32 @@ public class MachineUi
                     Console.WriteLine("Incorrect value passed");
                     break;
             }
-        }
     }
 
     private void PrintSelectionScreen()
     {
         while (true)
         {
-            Console.Write("Write, what coffee you want:");
-            foreach (var coffee in Enum.GetValues(typeof(CoffeeName)))
+            Console.WriteLine("Write, what coffee you want:");
+            var coffees = _machineCore.Coffees;
+
+            for (var i = 0; i < coffees.Count; i++)
             {
-                Console.Write($" {coffee}");
+                Console.WriteLine($"{i + 1}: {coffees[i].CoffeeName}");
             }
+            
             Console.WriteLine();
             Console.Write(">");
-            var userInput = RequestUserInput();
-            
-            switch (userInput)
-            {
-                case "latte":
-                    _machineCore.BuyDrink(0);
-                    break;
-                case "espresso":
-                    _machineCore.BuyDrink(1);
-                    break;
-                case "cappuccino":
-                    _machineCore.BuyDrink(2);
-                    break;
-                default:
-                    Console.WriteLine("Sorry, but there is no such coffee in our machine");
-                    continue;
-            }
+            var userInput = RequestNumber() - 1;
 
+            if (userInput > coffees.Count || userInput < 0)
+            {
+                Console.WriteLine("Index of coffee is pout of range");
+            }
+            else
+            {
+                _machineCore.BuyDrink(userInput);
+            }
             return;
         }
     }

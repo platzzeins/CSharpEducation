@@ -13,7 +13,7 @@ public class MachineCore
     public int Beans { get; private set; }
     public int Cups { get; private set; }
     public int Money { get; private set; }
-    private readonly List<Coffee> _coffees = new List<Coffee>();
+    public readonly List<Coffee> Coffees = new List<Coffee>();
 
 
     public MachineCore()
@@ -23,15 +23,15 @@ public class MachineCore
         Beans = 120;
         Cups = 9;
         Money = 50;
-        _coffees.Add(new Coffee(CoffeeName.Latte, 350, 75, 20, 7));
-        _coffees.Add(new Coffee(CoffeeName.Espresso, 250, 0, 16, 4));
-        _coffees.Add(new Coffee(CoffeeName.Cappuccino, 200, 100, 12, 6));
+        Coffees.Add(new Coffee(CoffeeName.Latte, 350, 75, 20, 7));
+        Coffees.Add(new Coffee(CoffeeName.Espresso, 250, 0, 16, 4));
+        Coffees.Add(new Coffee(CoffeeName.Cappuccino, 200, 100, 12, 6));
     }
 
     public void BuyDrink(int coffeeIndex)
     {
         MachineState = State.Buying;
-        var drink = _coffees[coffeeIndex];
+        var drink = Coffees[coffeeIndex];
         
         if (!IsAvailableForMaking(drink))
         {
