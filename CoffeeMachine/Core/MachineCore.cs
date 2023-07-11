@@ -7,25 +7,34 @@ public class MachineCore
 {
     public delegate void StateHandler(State state);
     public event StateHandler? Notify;
-    public State MachineState = State.Start;
-    public int Water { get; private set; }
-    public int Milk { get; private set; }
-    public int Beans { get; private set; }
-    public int Cups { get; private set; }
-    public int Money { get; private set; }
+    private State _processState = State.Start;
+
+    public State MachineState
+    {
+        get => _processState;
+        set
+        {
+            _processState = value;
+            Notify?.Invoke(MachineState);
+        }
+    }
+
+    private readonly MachineStorage _machineStorage;
     public readonly List<Coffee> Coffees = new List<Coffee>();
 
 
-    public MachineCore()
+    public MachineCore(MachineStorage machineStorage)
     {
-        Water = 400;
-        Milk = 540;
-        Beans = 120;
-        Cups = 9;
-        Money = 50;
-        Coffees.Add(new Coffee(CoffeeName.Latte, 350, 75, 20, 7));
-        Coffees.Add(new Coffee(CoffeeName.Espresso, 250, 0, 16, 4));
-        Coffees.Add(new Coffee(CoffeeName.Cappuccino, 200, 100, 12, 6));
+        _machineStorage = machineStorage;
+        _machineStorage.Water = 400;
+        _machineStorage.Milk = 540;
+        _machineStorage.Beans = 120;
+        _machineStorage.Cups = 9;
+        _machineStorage.Money = 50;
+        Coffees.Add(new Coffee("Latte", 350, 75, 20, 7));
+        Coffees.Add(new Coffee("Espresso", 250, 0, 16, 4));
+        Coffees.Add(new Coffee("Cappuccino", 200, 100, 12, 6));
+        FileHandler.WriteDataToHistory("Started new CoffeeMachine");
     }
 
     public void BuyDrink(int coffeeIndex)
@@ -35,81 +44,96 @@ public class MachineCore
         
         if (!IsAvailableForMaking(drink))
         {
-            if (Water < drink.Water)
+            try
             {
-                throw new IngredientException(Ingredient.Water);
+                if (_machineStorage.Water < drink.Water)
+                {
+                    throw new IngredientException(Ingredient.Water);
+                }
+
+                if (_machineStorage.Milk < drink.Milk)
+                {
+                    throw new IngredientException(Ingredient.Milk);
+                }
+
+                if (_machineStorage.Beans < drink.Beans)
+                {
+                    throw new IngredientException(Ingredient.Beans);
+                }
+
+                if (_machineStorage.Cups < 1)
+                {
+                    throw new IngredientException(Ingredient.Cup);
+                }
+
+                if (_machineStorage.Money < drink.Price)
+                {
+                    throw new PriceException();
+                }
             }
-            if (Milk < drink.Milk)
+            catch (IngredientException ie)
             {
-                throw new IngredientException(Ingredient.Milk);
+                Console.WriteLine(ie.Message);
             }
-            if (Beans < drink.Beans)
+            catch (PriceException pe)
             {
-                throw new IngredientException(Ingredient.Beans);
-            }
-            if (Cups < 1)
-            {
-                throw new IngredientException(Ingredient.Cup);
-            }
-            if (Money < drink.Price)
-            {
-                throw new PriceException();
+                Console.WriteLine(pe.Message);
             }
             return;
         }
-
+        
         const int delay = 1000;
         
-        Money -= drink.Price;
+        _machineStorage.Money -= drink.Price;
         MachineState = State.Start;
-        Notify?.Invoke(State.Start);
         Thread.Sleep(delay);
         
-        Beans -= drink.Beans;
+        _machineStorage.Beans -= drink.Beans;
         MachineState = State.Grind;
-        Notify?.Invoke(MachineState);
         Thread.Sleep(delay);
 
-        Water -= drink.Water;
+        _machineStorage.Water -= drink.Water;
         MachineState = State.Boil;
-        Notify?.Invoke(MachineState);
         Thread.Sleep(delay);
 
         MachineState = State.PourCoffee;
-        Notify?.Invoke(MachineState);
         Thread.Sleep(delay);
         
         if (drink.Milk > 0)
         {
-            Milk -= drink.Milk;
+            _machineStorage.Milk -= drink.Milk;
             MachineState = State.PourMilk;
-            Notify?.Invoke(MachineState);
             Thread.Sleep(delay);
         }
-
+        
+        FileHandler.WriteDataToHistory($"Ordered {drink.CoffeeName}");
+        
         MachineState = State.Ready;
-        Notify?.Invoke(MachineState);
     }
 
     private bool IsAvailableForMaking(Coffee drink)
     {
-        return Water >= drink.Water && Milk >= drink.Milk && Beans >= drink.Beans && Money >= drink.Price && Cups >= 1;
+        return _machineStorage.Water >= drink.Water 
+               && _machineStorage.Milk >= drink.Milk 
+               && _machineStorage.Beans >= drink.Beans 
+               && _machineStorage.Money >= drink.Price 
+               && _machineStorage.Cups >= 1;
     }
     
     public void FillMachine(int water, int milk, int beans, int cups)
     {
         MachineState = State.Filling;
         Notify?.Invoke(MachineState);
-        Water += water;
-        Milk += milk;
-        Beans += beans;
-        Cups += cups;
+        _machineStorage.Water += water;
+        _machineStorage.Milk += milk;
+        _machineStorage.Beans += beans;
+        _machineStorage.Cups += cups;
     }
 
     public void CashOut()
     {
         MachineState = State.CashOut;
-        Money = 0;
+        _machineStorage.Money = 0;
     } 
     
 }

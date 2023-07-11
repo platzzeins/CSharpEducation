@@ -1,6 +1,4 @@
 using CoffeeMachine.Core;
-using CoffeeMachine.Entities;
-using CoffeeMachine.Exceptions;
 using CoffeeMachine.Types;
 
 namespace CoffeeMachine.UI;
@@ -8,34 +6,43 @@ namespace CoffeeMachine.UI;
 public class MachineUi
 {
     private readonly MachineCore _machineCore;
-    public MachineUi(MachineCore machineCore) => _machineCore = machineCore;
+    private readonly MachineStorage _machineStorage;
+
+    public MachineUi(MachineCore machineCore, MachineStorage machineStorage)
+    {
+        _machineCore = machineCore;
+        _machineStorage = machineStorage;
+    } 
     
     public void GeneralMenu()
     {
-            Console.WriteLine("Write action (buy, fill, take, remaining, exit): ");
-            Console.Write("> ");
-            var response = Console.ReadLine()?.Trim().ToLower();
-            switch (response){
-                case "buy":
-                    PrintSelectionScreen();
-                    break;
-                case "fill": 
-                    PrintFillActionScreen();
-                    break;
-                case "take":
-                    PrintGaveMoneyScreen();
-                    break;
-                case "remaining":
-                    PrintRemainingScreen();
-                    break;
-                case "exit":
-                    _machineCore.MachineState = State.Exiting;
-                    Console.WriteLine("Goodbye!");
-                    break;
-                default:
-                    Console.WriteLine("Incorrect value passed");
-                    break;
-            }
+        FileHandler.WriteDataToHistory(_machineStorage.GetInfo());
+        Console.WriteLine("Write action (buy, fill, take, remaining, history, exit): ");
+        Console.Write("> ");
+        var response = Console.ReadLine()?.Trim().ToLower();
+        switch (response){
+            case "buy":
+                PrintSelectionScreen();
+                break;
+            case "fill": 
+                PrintFillActionScreen();
+                break;
+            case "take":
+                PrintGaveMoneyScreen();
+                break;
+            case "remaining":
+                PrintRemainingScreen();
+                break;
+            case "exit":
+                _machineCore.MachineState = State.Exiting;
+                break;
+            case "history":
+                FileHandler.WriteDataToHistory("smth");
+                break;
+            default:
+                Console.WriteLine("Incorrect value passed");
+                break;
+        }
     }
 
     private void PrintSelectionScreen()
@@ -85,6 +92,7 @@ public class MachineUi
         var cups = RequestNumber();
         
         _machineCore.FillMachine(water, milk, beans, cups);
+        FileHandler.WriteDataToHistory("Machine filled");
         PrintRemainingScreen();
     }
 
@@ -92,16 +100,18 @@ public class MachineUi
     {
         _machineCore.MachineState = State.Remaining;
         Console.WriteLine("The coffee machine has: ");
-        Console.WriteLine($"{_machineCore.Water} ml of water");
-        Console.WriteLine($"{_machineCore.Milk} ml of milk");
-        Console.WriteLine($"{_machineCore.Beans} grams of beans");
-        Console.WriteLine($"{_machineCore.Cups} cups");
-        Console.WriteLine($"{_machineCore.Money} money");
+        Console.WriteLine($"{_machineStorage.Water} ml of water");
+        Console.WriteLine($"{_machineStorage.Milk} ml of milk");
+        Console.WriteLine($"{_machineStorage.Beans} grams of beans");
+        Console.WriteLine($"{_machineStorage.Cups} cups");
+        Console.WriteLine($"{_machineStorage.Money} money");
     }
 
     private void PrintGaveMoneyScreen()
     {
-        Console.WriteLine($"I gave you {_machineCore.Money}");
+        var money = _machineStorage.Money;
+        Console.WriteLine($"I gave you {money}");
+        FileHandler.WriteDataToHistory($"Machine gave {money} money");
         _machineCore.CashOut();
     }
 
@@ -152,6 +162,19 @@ public class MachineUi
                 break;
             case State.Filling:
                 Console.WriteLine("You added components to CoffeeMachine...");
+                break;
+            case State.Buying:
+                Console.WriteLine("You buying a coffee, we are processing your purchase");
+                break;
+            case State.Exiting:
+                FileHandler.WriteDataToHistory("Shut down CoffeeMachine");
+                Console.WriteLine("Goodbye;");
+                break;
+            case State.CashOut:
+                Console.WriteLine("You cashed out the CoffeeMachine");
+                break;
+            case State.Remaining:
+                Console.WriteLine("Showing you a remains of the CoffeeMachine");
                 break;
             default:
                 Console.WriteLine("Unknown process");
