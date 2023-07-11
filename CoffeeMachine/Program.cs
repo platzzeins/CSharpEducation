@@ -8,17 +8,16 @@ namespace CoffeeMachine
     {
         public static void Main()
         {
-            var machineStorage = new MachineStorage();
-            var machineCore = new MachineCore(machineStorage);
-            var machineUi = new MachineUi(machineCore, machineStorage);
-            machineCore.Notify += machineUi.PrintState;
+            var machineCore = new MachineCore();
+            var machineUi = new MachineUi(machineCore, machineCore.Storage);
 
             while (true)
             {
                 if (machineCore.MachineState == State.Exiting)
                 {
                     break;
-                }  
+                }
+                
                 machineUi.GeneralMenu();
             }
         }

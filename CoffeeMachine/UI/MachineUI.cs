@@ -12,11 +12,11 @@ public class MachineUi
     {
         _machineCore = machineCore;
         _machineStorage = machineStorage;
+        _machineCore.Notify += PrintState;
     } 
     
     public void GeneralMenu()
     {
-        FileHandler.WriteDataToHistory(_machineStorage.GetInfo());
         Console.WriteLine("Write action (buy, fill, take, remaining, history, exit): ");
         Console.Write("> ");
         var response = Console.ReadLine()?.Trim().ToLower();
@@ -35,9 +35,6 @@ public class MachineUi
                 break;
             case "exit":
                 _machineCore.MachineState = State.Exiting;
-                break;
-            case "history":
-                FileHandler.WriteDataToHistory("smth");
                 break;
             default:
                 Console.WriteLine("Incorrect value passed");
@@ -92,7 +89,6 @@ public class MachineUi
         var cups = RequestNumber();
         
         _machineCore.FillMachine(water, milk, beans, cups);
-        FileHandler.WriteDataToHistory("Machine filled");
         PrintRemainingScreen();
     }
 
@@ -111,7 +107,6 @@ public class MachineUi
     {
         var money = _machineStorage.Money;
         Console.WriteLine($"I gave you {money}");
-        FileHandler.WriteDataToHistory($"Machine gave {money} money");
         _machineCore.CashOut();
     }
 
@@ -167,7 +162,7 @@ public class MachineUi
                 Console.WriteLine("You buying a coffee, we are processing your purchase");
                 break;
             case State.Exiting:
-                FileHandler.WriteDataToHistory("Shut down CoffeeMachine");
+                _machineCore.OnExit();
                 Console.WriteLine("Goodbye;");
                 break;
             case State.CashOut:

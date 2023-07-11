@@ -19,18 +19,13 @@ public class MachineCore
         }
     }
 
-    private readonly MachineStorage _machineStorage;
+    public MachineStorage Storage;
     public readonly List<Coffee> Coffees = new List<Coffee>();
 
 
-    public MachineCore(MachineStorage machineStorage)
+    public MachineCore()
     {
-        _machineStorage = machineStorage;
-        _machineStorage.Water = 400;
-        _machineStorage.Milk = 540;
-        _machineStorage.Beans = 120;
-        _machineStorage.Cups = 9;
-        _machineStorage.Money = 50;
+        Storage = MachineStorage.Deserialize();
         Coffees.Add(new Coffee("Latte", 350, 75, 20, 7));
         Coffees.Add(new Coffee("Espresso", 250, 0, 16, 4));
         Coffees.Add(new Coffee("Cappuccino", 200, 100, 12, 6));
@@ -46,27 +41,27 @@ public class MachineCore
         {
             try
             {
-                if (_machineStorage.Water < drink.Water)
+                if (Storage.Water < drink.Water)
                 {
                     throw new IngredientException(Ingredient.Water);
                 }
 
-                if (_machineStorage.Milk < drink.Milk)
+                if (Storage.Milk < drink.Milk)
                 {
                     throw new IngredientException(Ingredient.Milk);
                 }
 
-                if (_machineStorage.Beans < drink.Beans)
+                if (Storage.Beans < drink.Beans)
                 {
                     throw new IngredientException(Ingredient.Beans);
                 }
 
-                if (_machineStorage.Cups < 1)
+                if (Storage.Cups < 1)
                 {
                     throw new IngredientException(Ingredient.Cup);
                 }
 
-                if (_machineStorage.Money < drink.Price)
+                if (Storage.Money < drink.Price)
                 {
                     throw new PriceException();
                 }
@@ -84,15 +79,15 @@ public class MachineCore
         
         const int delay = 1000;
         
-        _machineStorage.Money -= drink.Price;
+        Storage.Money -= drink.Price;
         MachineState = State.Start;
         Thread.Sleep(delay);
         
-        _machineStorage.Beans -= drink.Beans;
+        Storage.Beans -= drink.Beans;
         MachineState = State.Grind;
         Thread.Sleep(delay);
 
-        _machineStorage.Water -= drink.Water;
+        Storage.Water -= drink.Water;
         MachineState = State.Boil;
         Thread.Sleep(delay);
 
@@ -101,7 +96,7 @@ public class MachineCore
         
         if (drink.Milk > 0)
         {
-            _machineStorage.Milk -= drink.Milk;
+            Storage.Milk -= drink.Milk;
             MachineState = State.PourMilk;
             Thread.Sleep(delay);
         }
@@ -113,27 +108,35 @@ public class MachineCore
 
     private bool IsAvailableForMaking(Coffee drink)
     {
-        return _machineStorage.Water >= drink.Water 
-               && _machineStorage.Milk >= drink.Milk 
-               && _machineStorage.Beans >= drink.Beans 
-               && _machineStorage.Money >= drink.Price 
-               && _machineStorage.Cups >= 1;
+        return Storage.Water >= drink.Water 
+               && Storage.Milk >= drink.Milk 
+               && Storage.Beans >= drink.Beans 
+               && Storage.Money >= drink.Price 
+               && Storage.Cups >= 1;
     }
     
     public void FillMachine(int water, int milk, int beans, int cups)
     {
         MachineState = State.Filling;
-        Notify?.Invoke(MachineState);
-        _machineStorage.Water += water;
-        _machineStorage.Milk += milk;
-        _machineStorage.Beans += beans;
-        _machineStorage.Cups += cups;
+        Storage.Water += water;
+        Storage.Milk += milk;
+        Storage.Beans += beans;
+        Storage.Cups += cups;
+        FileHandler.WriteDataToHistory("Machine filled");
     }
 
     public void CashOut()
     {
+        FileHandler.WriteDataToHistory($"Machine gave {Storage.Money} money");
         MachineState = State.CashOut;
-        _machineStorage.Money = 0;
-    } 
+        Storage.Money = 0;
+        
+    }
+
+    public void OnExit()
+    {
+        MachineStorage.Serialize(Storage);
+        FileHandler.WriteDataToHistory("Shut down CoffeeMachine");
+    }
     
 }

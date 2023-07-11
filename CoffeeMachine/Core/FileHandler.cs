@@ -5,7 +5,7 @@ public static class FileHandler
     public static void WriteDataToHistory(string info)
     {
         var date = DateTime.Now;
-        var filePath = $"../../../History/history_{date:yyyy-MM-dd}.txt";
+        var filePath = $"history_{date:yyyy-MM-dd}.txt";
         var docPath = Environment.CurrentDirectory;
 
         try
