@@ -23,13 +23,13 @@ public class MachineCore
     public readonly List<Coffee> Coffees = new List<Coffee>();
 
 
-    public MachineCore()
+    public MachineCore(MachineStorage storage)
     {
-        Storage = MachineStorage.Deserialize();
+        Storage = storage;
         Coffees.Add(new Coffee("Latte", 350, 75, 20, 7));
         Coffees.Add(new Coffee("Espresso", 250, 0, 16, 4));
         Coffees.Add(new Coffee("Cappuccino", 200, 100, 12, 6));
-        FileHandler.WriteDataToHistory("Started new CoffeeMachine");
+        FileManager.WriteDataToHistory("Started new CoffeeMachine");
     }
 
     public void BuyDrink(int coffeeIndex)
@@ -101,7 +101,7 @@ public class MachineCore
             Thread.Sleep(delay);
         }
         
-        FileHandler.WriteDataToHistory($"Ordered {drink.CoffeeName}");
+        FileManager.WriteDataToHistory($"Ordered {drink.CoffeeName}");
         
         MachineState = State.Ready;
     }
@@ -122,12 +122,12 @@ public class MachineCore
         Storage.Milk += milk;
         Storage.Beans += beans;
         Storage.Cups += cups;
-        FileHandler.WriteDataToHistory("Machine filled");
+        FileManager.WriteDataToHistory("Machine filled");
     }
 
     public void CashOut()
     {
-        FileHandler.WriteDataToHistory($"Machine gave {Storage.Money} money");
+        FileManager.WriteDataToHistory($"Machine gave {Storage.Money} money");
         MachineState = State.CashOut;
         Storage.Money = 0;
         
@@ -135,8 +135,8 @@ public class MachineCore
 
     public void OnExit()
     {
-        MachineStorage.Serialize(Storage);
-        FileHandler.WriteDataToHistory("Shut down CoffeeMachine");
+        Storage.Save();
+        FileManager.WriteDataToHistory("Shut down CoffeeMachine");
     }
     
 }

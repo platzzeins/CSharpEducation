@@ -1,6 +1,6 @@
 namespace CoffeeMachine.Core;
 
-public static class FileHandler
+public static class FileManager
 {
     public static void WriteDataToHistory(string info)
     {

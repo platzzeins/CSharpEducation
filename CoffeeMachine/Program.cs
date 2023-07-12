@@ -8,7 +8,8 @@ namespace CoffeeMachine
     {
         public static void Main()
         {
-            var machineCore = new MachineCore();
+            var storage = MachineStorage.Load();
+            var machineCore = new MachineCore(storage);
             var machineUi = new MachineUi(machineCore, machineCore.Storage);
 
             while (true)

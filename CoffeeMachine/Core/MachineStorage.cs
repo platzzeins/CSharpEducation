@@ -1,5 +1,3 @@
-using System.Text.Json;
-
 namespace CoffeeMachine.Core;
 
 [Serializable]
@@ -10,49 +8,55 @@ public class MachineStorage
     public int Beans{ get; set; }
     public int Cups{ get; set; }
     public int Money{ get; set; } 
-    private static string _path = Path.Combine(Environment.CurrentDirectory, "MachineStorageData.json");
+    private const string FilePath = "Machine.storage";
+    private static string _path = Path.Combine(Environment.CurrentDirectory, FilePath);
 
-    public MachineStorage()
+    public MachineStorage(int water = 540, int milk = 400, int beans = 120, int cups = 9, int money = 50)
     {
-        Water = 400;
-        Milk = 540;
-        Beans = 120;
-        Cups = 9;
-        Money = 50;
+        Water = water;
+        Milk = milk;
+        Beans = beans;
+        Cups = cups;
+        Money = money;
     }
     
-    public string GetInfo()
+    public override string ToString()
     {
         return
             $"Storage contains: {Water} ml of water, {Milk} ml of milk, {Beans} gr of beans, {Cups} cups, {Money} money";
     }
 
-    public static void Serialize(MachineStorage storage)
+    public void Save()
     {
-        var serializeText = JsonSerializer.Serialize(storage);
-        Console.WriteLine(serializeText);
+        using var file = new FileStream(_path, FileMode.OpenOrCreate);
+        using var binaryWriter = new BinaryWriter(file);
         
-        File.WriteAllText(_path, serializeText);
+        binaryWriter.Write(Water);
+        binaryWriter.Write(Milk);
+        binaryWriter.Write(Beans);
+        binaryWriter.Write(Cups);
+        binaryWriter.Write(Money);
     }
 
-    public static MachineStorage Deserialize()
+    public static MachineStorage Load()
     {
-        MachineStorage? storage = null;
         try
         {
-            var serializedText = File.ReadAllText(_path);
-            storage = JsonSerializer.Deserialize<MachineStorage>(serializedText);
+            using var file = new FileStream(_path, FileMode.Open);
+            using var binaryReader = new BinaryReader(file);
+            var water = binaryReader.ReadInt32();
+            var milk = binaryReader.ReadInt32();
+            var beans = binaryReader.ReadInt32();
+            var cups = binaryReader.ReadInt32();
+            var money = binaryReader.ReadInt32();
+            
+            var tempStorage = new MachineStorage(water, milk, beans, cups, money);
+            Console.WriteLine(tempStorage.ToString());
+            return tempStorage;
         }
-        catch (JsonException)
-        {
-            Console.WriteLine("Got exception");
-        }
-
-        if (storage is null)
+        catch (FileNotFoundException)
         {
             return new MachineStorage();
         }
-
-        return storage;
     }
 }
