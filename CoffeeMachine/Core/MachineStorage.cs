@@ -11,13 +11,22 @@ public class MachineStorage
     private const string FilePath = "Machine.storage";
     private static string _path = Path.Combine(Environment.CurrentDirectory, FilePath);
 
-    public MachineStorage(int water = 540, int milk = 400, int beans = 120, int cups = 9, int money = 50)
+    public MachineStorage(int water, int milk, int beans, int cups, int money)
     {
         Water = water;
         Milk = milk;
         Beans = beans;
         Cups = cups;
         Money = money;
+    }
+
+    public MachineStorage()
+    {
+        Water = 540;
+        Milk = 400;
+        Beans = 120;
+        Cups = 9;
+        Money = 50;
     }
     
     public override string ToString()
