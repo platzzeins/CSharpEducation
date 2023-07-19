@@ -1,5 +1,4 @@
-﻿using Matrix;
-using Matrix.Ui;
+﻿using Matrix.Ui;
 
 namespace Matrix
 {

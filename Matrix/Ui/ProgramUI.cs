@@ -1,3 +1,5 @@
+using Matrix.Entities;
+
 namespace Matrix.Ui;
 
 public class ProgramUi
@@ -138,38 +140,40 @@ public class ProgramUi
         
     }
     
-    private Entities.Matrix RequestMatrix(int xDimension, int yDimension)
+    private IdentityMatrix RequestMatrix(int xDimension, int yDimension)
     {
-        var matrix = new Entities.Matrix(new int[xDimension,yDimension]);
+        var matrix = new IdentityMatrix(xDimension,yDimension);
 
 
         for (var i = 0; i < xDimension; i++)
         {
-            Console.WriteLine($"Enter values of {i} level");
+            Console.WriteLine($"Enter values of {i+1} level");
             var values = RequestValuesOfMatrix(yDimension);
-            for (var j = 0; j < yDimension; j++)
+
+            var counter = 0;
+            foreach (var value in values)
             {
-                matrix.Values[i, j] = values[j];
+                matrix[i, counter] = value;
+                counter++;
             }
         }
+        
         return matrix;
     }
 
-    private List<int> RequestValuesOfMatrix(int dimension)
+    private IEnumerable<int> RequestValuesOfMatrix(int yDimension)
     {
-        
-        var formattedValues = new List<int>();
         while (true)
         {
-            
+            var formattedValues = new List<int>();
             var userValues = RequestUserInput().Split();
 
-            if (userValues.Length != dimension)
+            if (userValues.Length != yDimension)
             {
                 Console.WriteLine("Wrong quantity of values entered");
                 continue;
             }
-            
+        
             foreach (var userValue in userValues)
             {
                 if (int.TryParse(userValue, out var value))
@@ -184,7 +188,11 @@ public class ProgramUi
 
             if (userValues.Length == formattedValues.Count)
             {
-                return formattedValues;
+                foreach (var value in formattedValues)
+                {
+                    yield return value;
+                }
+                yield break;
             }
         }
     }
@@ -230,9 +238,9 @@ public class ProgramUi
         return userInput;
     }
 
-    private void PrintMatrix(Entities.Matrix matrix)
+    private void PrintMatrix(IdentityMatrix identityMatrix)
     {
-        var values = matrix.Values;
+        var values = identityMatrix.Values;
         var rows = values.GetLength(0);
         var columns = values.GetLength(1);
 
