@@ -1,5 +1,3 @@
-using Matrix.Entities;
-
 namespace Matrix.Ui;
 
 public class ProgramUi
@@ -43,10 +41,10 @@ public class ProgramUi
     private void PrintAddingMatrixScreen()
     {
         Console.WriteLine("Enter dimensions of your matrix");
-        var (xDimension, yDimension) = RequestDimensions();
+        var (rows, columns) = RequestDimensions();
 
-        var firstMatrix = RequestMatrix(xDimension, yDimension);
-        var secondMatrix = RequestMatrix(xDimension, yDimension);
+        var firstMatrix = RequestMatrix(rows, columns);
+        var secondMatrix = RequestMatrix(rows, columns);
 
         var addedMatrix = firstMatrix + secondMatrix;
         
@@ -56,9 +54,9 @@ public class ProgramUi
     private void PrintMultiplyingMatrixByConstScreen()
     {
         Console.WriteLine("Enter dimensions of your matrix");
-        var (xDimension, yDimension) = RequestDimensions();
+        var (rows, columns) = RequestDimensions();
 
-        var matrix = RequestMatrix(xDimension, yDimension);
+        var matrix = RequestMatrix(rows, columns);
         Console.WriteLine("Enter multiplier for matrix");
         var multiplier = RequestNumber();
 
@@ -70,10 +68,10 @@ public class ProgramUi
     private void PrintMultiplyingMatrixByMatrix()
     {
         Console.WriteLine("Enter dimensions of your matrix");
-        var (xDimension, yDimension) = RequestDimensions();
+        var (rows, columns) = RequestDimensions();
 
-        var firstMatrix = RequestMatrix(xDimension, yDimension);
-        var secondMatrix = RequestMatrix(xDimension, yDimension);
+        var firstMatrix = RequestMatrix(rows, columns);
+        var secondMatrix = RequestMatrix(rows, columns);
 
         var matrix = firstMatrix * secondMatrix;
         
@@ -106,15 +104,15 @@ public class ProgramUi
         while (true)
         {
             Console.WriteLine("Enter dimensions of your matrix");
-            var (xDimension, yDimension) = RequestDimensions();
+            var (rows, columns) = RequestDimensions();
 
-            if (typeOfTranspose is 1 or 2 && (xDimension != yDimension))
+            if (typeOfTranspose is 1 or 2 && (rows != columns))
             {
                 Console.WriteLine("For main and side diagonal transpose X Dimension and Y Dimension must equal each other");
                 continue;
             }
         
-            var matrix = RequestMatrix(xDimension, yDimension);
+            var matrix = RequestMatrix(rows, columns);
 
             switch (typeOfTranspose)
             {
@@ -140,59 +138,49 @@ public class ProgramUi
         
     }
     
-    private IdentityMatrix RequestMatrix(int xDimension, int yDimension)
+    private Entities.Matrix RequestMatrix(int rows, int columns)
     {
-        var matrix = new IdentityMatrix(xDimension,yDimension);
+        var matrix = new Entities.Matrix(rows, columns);
 
 
-        for (var i = 0; i < xDimension; i++)
+        for (var i = 0; i < rows; i++)
         {
             Console.WriteLine($"Enter values of {i+1} level");
-            var values = RequestValuesOfMatrix(yDimension);
+            var values = RequestValuesOfMatrix(columns);
 
             var counter = 0;
             foreach (var value in values)
             {
+                Console.WriteLine(value);
                 matrix[i, counter] = value;
-                counter++;
             }
         }
         
         return matrix;
     }
 
-    private IEnumerable<int> RequestValuesOfMatrix(int yDimension)
+    private IEnumerable<int> RequestValuesOfMatrix(int columns)
     {
-        while (true)
+        for (var column = 0; column < columns - 1; column++)
         {
-            var formattedValues = new List<int>();
             var userValues = RequestUserInput().Split();
 
-            if (userValues.Length != yDimension)
+            if (userValues.Length != columns)
             {
                 Console.WriteLine("Wrong quantity of values entered");
                 continue;
             }
-        
+
             foreach (var userValue in userValues)
             {
                 if (int.TryParse(userValue, out var value))
                 {
-                    formattedValues.Add(value);
+                    yield return value;
                 }
                 else
                 {
                     break;
                 }
-            }
-
-            if (userValues.Length == formattedValues.Count)
-            {
-                foreach (var value in formattedValues)
-                {
-                    yield return value;
-                }
-                yield break;
             }
         }
     }
@@ -208,10 +196,10 @@ public class ProgramUi
                 continue;
             }
 
-            if (int.TryParse(notParsedDimension[0], out var xDimension) &&
-                int.TryParse(notParsedDimension[1], out var yDimension))
+            if (int.TryParse(notParsedDimension[0], out var rows) &&
+                int.TryParse(notParsedDimension[1], out var columns))
             {
-                return (xDimension, yDimension);
+                return (rows, columns);
             }
 
             Console.WriteLine("Invalid value entered");
@@ -238,18 +226,14 @@ public class ProgramUi
         return userInput;
     }
 
-    private void PrintMatrix(IdentityMatrix identityMatrix)
+    private void PrintMatrix(Entities.Matrix matrix)
     {
-        var values = identityMatrix.Values;
-        var rows = values.GetLength(0);
-        var columns = values.GetLength(1);
-
         Console.ForegroundColor = ConsoleColor.Red;
-        for (var i = 0; i < rows; i++)
+        for (var i = 0; i < matrix.Rows; i++)
         {
-            for (var j = 0; j < columns; j++)
+            for (var j = 0; j < matrix.Columns; j++)
             {
-                Console.Write(values[i, j].ToString().PadLeft(3) + " ");
+                Console.Write(matrix[i, j].ToString().PadLeft(3) + " ");
             }
             Console.WriteLine();
         }
