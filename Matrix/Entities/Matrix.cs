@@ -20,19 +20,10 @@ public class Matrix : ICloneable
 
     public static Matrix operator +(Matrix firstMatrix, Matrix secondMatrix)
     {
-        try
+        if (firstMatrix.Rows != secondMatrix.Rows && firstMatrix.Columns != secondMatrix.Columns)
         {
-            if (firstMatrix.Rows != secondMatrix.Rows && firstMatrix.Columns != secondMatrix.Columns)
-            {
-                throw new MatrixNotInRangeException("Rows and Columns of first and second given matrix aren't matching");
-            }
+            throw new MatrixNotInRangeException("Rows and Columns of first and second given matrix aren't matching");
         }
-        catch (MatrixNotInRangeException exception)
-        {
-            Console.WriteLine(exception.Message);
-            return new Matrix(firstMatrix.Rows, firstMatrix.Columns);
-        }
-        
         var addedMatrix = new Matrix(firstMatrix.Rows, firstMatrix.Columns);
         for (var i = 0; i < firstMatrix.Rows; i++)
         {
@@ -59,24 +50,16 @@ public class Matrix : ICloneable
 
     public static Matrix operator *(Matrix firstMatrix, Matrix secondMatrix)
     {
-        try
+        if (firstMatrix.Rows != secondMatrix.Columns )
         {
-            if (firstMatrix.Rows != secondMatrix.Columns )
-            {
-                throw new MatrixNotInRangeException("Rows of first matrix and Columns of second matrix doesn't match");
-            }
+            throw new MatrixNotInRangeException("Rows of first matrix and Columns of second matrix doesn't match");
+        }
 
-            if (firstMatrix.Columns != secondMatrix.Rows)
-            {
-                throw new MatrixNotInRangeException("Columns of first matrix and Rows of second matrix doesn't match");
-            }
-        }
-        catch (MatrixNotInRangeException exception)
+        if (firstMatrix.Columns != secondMatrix.Rows)
         {
-            Console.WriteLine(exception.Message);
-            return new Matrix(firstMatrix.Rows, firstMatrix.Columns);
+            throw new MatrixNotInRangeException("Columns of first matrix and Rows of second matrix doesn't match");
         }
-        
+
         var multipliedMatrix = new Matrix(firstMatrix.Rows, secondMatrix.Columns);
         
         for (var i = 0; i < firstMatrix.Rows; i++)
