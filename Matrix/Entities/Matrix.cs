@@ -1,3 +1,5 @@
+using Matrix.Exceptions;
+
 namespace Matrix.Entities;
 
 public class Matrix : ICloneable
@@ -22,10 +24,10 @@ public class Matrix : ICloneable
         {
             if (firstMatrix.Rows != secondMatrix.Rows && firstMatrix.Columns != secondMatrix.Columns)
             {
-                throw new IndexOutOfRangeException("Rows and Columns of first and second given matrix aren't matching");
+                throw new MatrixNotInRangeException("Rows and Columns of first and second given matrix aren't matching");
             }
         }
-        catch (IndexOutOfRangeException exception)
+        catch (MatrixNotInRangeException exception)
         {
             Console.WriteLine(exception.Message);
             return new Matrix(firstMatrix.Rows, firstMatrix.Columns);
@@ -61,16 +63,15 @@ public class Matrix : ICloneable
         {
             if (firstMatrix.Rows != secondMatrix.Columns )
             {
-                throw new IndexOutOfRangeException("Rows of first matrix and Columns of second matrix doesn't match");
+                throw new MatrixNotInRangeException("Rows of first matrix and Columns of second matrix doesn't match");
             }
 
             if (firstMatrix.Columns != secondMatrix.Rows)
             {
-
-                throw new IndexOutOfRangeException("Columns of first matrix and Rows of second matrix doesn't match");
+                throw new MatrixNotInRangeException("Columns of first matrix and Rows of second matrix doesn't match");
             }
         }
-        catch (IndexOutOfRangeException exception)
+        catch (MatrixNotInRangeException exception)
         {
             Console.WriteLine(exception.Message);
             return new Matrix(firstMatrix.Rows, firstMatrix.Columns);
@@ -141,7 +142,6 @@ public class Matrix : ICloneable
             }
         }
     }
-
     public object Clone()
     {
         var clonedMatrix = new int[Values.GetLength(0), Values.GetLength(1)];
