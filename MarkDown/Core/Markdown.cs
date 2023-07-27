@@ -34,19 +34,35 @@ public static class Markdown
         return $"`{userString}`";
     }
 
-    public static void FormatIntoOrderedList(List<string> userList)
+    public static List<string> FormatIntoOrderedList(List<string> userList)
     {
-        for (var i = 0; i < userList.Count; i++)
+        var copiedList = userList.Clone();
+        
+        for (var i = 0; i < copiedList.Count; i++)
         {
-            userList[i] = $"\n{i + 1}. {userList[i]}";
+            copiedList[i] = $"\n{i + 1}. {copiedList[i]}";
         }
+
+        return copiedList;
     }
     
-    public static void FormatIntoUnorderedList(List<string> userList)
+    public static List<string> FormatIntoUnorderedList(List<string> userList)
     {
-        for (var i = 0; i < userList.Count; i++)
+        var copiedList = userList.Clone();
+        
+        for (var i = 0; i < copiedList.Count; i++)
         {
-            userList[i] = $"\n+ {userList[i]}";
+            copiedList[i] = $"\n+ {copiedList[i]}";
         }
+
+        return copiedList;
+    }
+}
+
+public static class Extension
+{
+    public static List<T> Clone<T>(this List<T> source)
+    {
+        return source.GetRange(0, source.Count);
     }
 }

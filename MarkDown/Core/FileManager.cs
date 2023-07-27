@@ -1,68 +1,33 @@
 namespace MarkDown.Core;
 
-public static class FileManager
+public class FileManager
 {
-    private static readonly string DocPath = Environment.CurrentDirectory;
+    private readonly string _fullPath;
 
-    public static void WriteMarkdownDataToFile(string data)
+    public FileManager(string docPath, string fileName = "markdown.md")
     {
-        var date = DateTime.Now;
-        var filePath = $"markdown_{date:yyyy-MM-dd}.md";
-
+        _fullPath = Path.Combine(docPath, fileName);
+    }
+    
+    public void WriteMarkdownDataToFile(string data)
+    {
         try
         {
-            using var writer = new StreamWriter(Path.Combine(DocPath, filePath), true);
+            using var writer = new StreamWriter(_fullPath, true);
             writer.Write(data);
         }
         catch (DirectoryNotFoundException)
         {
-            Console.WriteLine("Troubles with directory path");
+            Console.WriteLine("Directory path invalid");
         }
     }
 
-    public static void WriteMarkDownDataToFile(List<string> allData)
+    public void WriteMarkDownDataToFile(List<string> allData)
     {
-        var date = DateTime.Now;
-        var filePath = $"markdown_{date:yyyy-MM-dd}.md";
-
-        try
+        foreach (var data in allData)
         {
-            using var writer = new StreamWriter(Path.Combine(DocPath, filePath), true);
-            foreach (var data in allData)
-            {
-                writer.Write(data);
-            }
-            writer.WriteLine();
+            WriteMarkdownDataToFile(data);
         }
-        catch (DirectoryNotFoundException)
-        {
-            Console.WriteLine("Troubles with directory path");
-        }
-    }
-
-    public static void WriteLogs(string type, string info)
-    {
-        const string filePath = "markdown_logs.md";
-        var fullPath = Path.Combine(DocPath, filePath);
-
-        try
-        {
-            if (File.Exists(fullPath))
-            {
-                using var writer = new StreamWriter(Path.Combine(DocPath, filePath), true);
-                writer.WriteLine($"|{type}|{DateTime.Now}|{info}|");
-            }
-            else
-            {
-                using var writer = new StreamWriter(Path.Combine(DocPath, filePath), true);
-                writer.WriteLine("|Type|Date|Info|");
-                writer.WriteLine("|-|-|-|");
-                writer.WriteLine($"|{type}|{DateTime.Now}|{info}|");
-            }
-        }
-        catch (DirectoryNotFoundException e)
-        {
-            Console.WriteLine(e);
-        }
+        WriteMarkdownDataToFile("/n");
     }
 }
