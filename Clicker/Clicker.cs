@@ -2,38 +2,72 @@ namespace Clicker;
 
 public class Clicker
 {
-    private int _clicks;
+    private int Cliks { get; set; }
+    private Thread AutoClickerThread { get; set; }
+    private Thread KeyListenerThread { get; set; }
+    private bool IsClickerRunning { get; set; }
+
+    public Clicker()
+    {
+        Cliks = 0;
+        AutoClickerThread = new Thread(AutoClicker);
+        KeyListenerThread = new Thread(EnterKeyListener);
+    }
+
 
     public void Start()
     {
-        var thread1 = new Thread(StartAutoClicker);
-        var thread2 = new Thread(StartEnterKeyListener);
-        thread1.Start();
-        thread2.Start();
+        if (IsClickerRunning)
+        {
+            Console.WriteLine("AutoClicker already started!");
+            return;
+        }
+
+        IsClickerRunning = true;
+        AutoClickerThread.Start();
+        KeyListenerThread.Start();
     }
 
-    private void StartEnterKeyListener()
+    public void WaitForExit()
     {
-        while (Console.ReadKey().Key == ConsoleKey.Enter)
+        AutoClickerThread.Join();
+        KeyListenerThread.Join();
+    }
+
+    private void EnterKeyListener()
+    {
+        while (IsClickerRunning)
         {
-            _clicks++;
+            var key = Console.ReadKey(true);
+            if (key.Key == ConsoleKey.Q)
+            {
+                Console.WriteLine("You lost!");
+                IsClickerRunning = false;
+                break;
+            }
+
+            if (key.Key == ConsoleKey.Enter)
+            {
+                Cliks++;
+            }
+
             PrintClicks();
         }
     }
 
-    private void StartAutoClicker()
+    private void AutoClicker()
     {
-        while (true)
+        while (IsClickerRunning)
         {
-            Thread.Sleep(1000);
-            _clicks++;
+            Cliks++;
             PrintClicks();
+            Thread.Sleep(1000);
         }
     }
 
     private void PrintClicks()
     {
         Console.Clear();
-        Console.WriteLine($"Scholarship for Nikita: {_clicks}");
+        Console.WriteLine($"Scholarship for Nikita: {Cliks}");
     }
 }
