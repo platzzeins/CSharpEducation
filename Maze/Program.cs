@@ -11,6 +11,8 @@ namespace Maze
             var ui = new UserInterface(maze);
             var chosenLevel = ui.SelectLevelScreen();
             
+            
+            
             maze.Start(chosenLevel);
             
             var autoMovingThread = new Thread(maze.ChangePlayerPosition);
@@ -22,13 +24,15 @@ namespace Maze
             {
                 var tempX = 0;
                 var tempY = 0;
-            
+                ui.PrintMap();
+                
                 while (true)
                 {
                     if (maze.Player.XPosition == tempX && maze.Player.YPosition == tempY) continue;
+                    ui.ChangePlayerIconPosition(tempX, tempY);
                     tempX = maze.Player.XPosition;
                     tempY = maze.Player.YPosition;
-                    ui.PrintMaze();
+                    
                 }
             });
             printThread.Start();

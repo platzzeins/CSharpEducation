@@ -18,23 +18,46 @@ public class UserInterface
         Console.WriteLine("Choose, what level you want to play");
         var levels = _maze.Levels;
 
-        foreach (var level in levels)
-        {
-            Console.WriteLine(level);
-        }
-        
+        var row = Console.CursorTop;
+        var col = Console.CursorLeft;
+        var index = 0;
         while (true)
         {
-            var userInput = RequestUserInput();
-
-            if (levels.Contains(userInput))
+            DrawMenu(levels, row, col, index);
+            switch (Console.ReadKey(true).Key)
             {
-                return userInput;
+                case ConsoleKey.DownArrow:
+                    if (index < levels.Count -1)
+                        index++;
+                    break;
+                case ConsoleKey.UpArrow:
+                    if (index > 0)
+                        index--;
+                    break;
+                case ConsoleKey.Enter:
+                    return levels[index];
             }
-
-            Console.WriteLine("Wrong input!");
         }
     }
+    
+    private void DrawMenu(List<string> items, int row, int col, int index)
+    {
+        Console.SetCursorPosition(col, row);
+        for (int i = 0; i < items.Count; i++)
+        {
+            if (i == index)
+            {
+                Console.BackgroundColor = ConsoleColor.Cyan;
+                Console.ForegroundColor = ConsoleColor.Black;
+            }
+            Console.WriteLine(items[i]);
+            Console.ResetColor();
+        }
+        Console.WriteLine();
+        Console.ResetColor();
+    }
+
+    
     public void ReadUserMove()
     {
         while (_maze.IsMazeWorking)
@@ -49,11 +72,11 @@ public class UserInterface
                 _ => _maze.CurrentDirection
             };
         }
-        Console.WriteLine("ReadUserMove closed!");
     }
     
     public void PrintFinalScreen()
     {
+        Console.Clear();
         Console.WriteLine($"Your score: {_maze.Player.Score}");
         Console.WriteLine($"Your time (min, sec, msec): {_maze.GetElapsedTime()}");
         
@@ -64,8 +87,20 @@ public class UserInterface
         
         Console.WriteLine("Thanks for playing!");
     }
+
+    public void ChangePlayerIconPosition(int prevX, int prevY)
+    {
+        Console.CursorVisible = false;
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.SetCursorPosition(prevX, prevY);
+        Console.Write(FieldIcon);
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.SetCursorPosition(_maze.Player.XPosition, _maze.Player.YPosition);
+        Console.Write(PlayerIcon);
+        Console.ResetColor();
+    }
     
-    public void PrintMaze()
+    public void PrintMap()
     {
         var map = _maze.Map;
         Console.Clear();
@@ -74,7 +109,7 @@ public class UserInterface
             for (var j = 0; j < map.GetLength(1); j++)
             {
                 var cell = map[i, j];
-
+        
                 if (j == _maze.Player.XPosition && i == _maze.Player.YPosition)
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
@@ -84,7 +119,7 @@ public class UserInterface
                 }
                 Console.ForegroundColor = cell switch
                 {
-                    FieldIcon => ConsoleColor.Black,
+                    FieldIcon => ConsoleColor.White,
                     BorderIcon => ConsoleColor.Red,
                     ExitIcon => ConsoleColor.Green,
                     _ => Console.ForegroundColor

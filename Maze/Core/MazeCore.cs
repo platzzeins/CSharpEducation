@@ -6,12 +6,12 @@ namespace Maze.Core;
 
 public class MazeCore
 {
-    public readonly Player Player = new Player();
+    public readonly Player Player = new ();
     public Direction CurrentDirection = Direction.AtOnePlace;
-    private readonly Stopwatch _stopWatch = new Stopwatch();
-    private readonly FileHandler _fileHandler = new FileHandler();
-    private readonly LogHandler _logHandler = new LogHandler();
-    private readonly LevelFileHandler _levelFileHandler = new LevelFileHandler(!!!Path to Levels Folder!!!);
+    private readonly Stopwatch _stopWatch = new ();
+    private readonly FileHandler _fileHandler = new ();
+    private readonly LogHandler _logHandler = new ();
+    private readonly LevelFileHandler _levelFileHandler = new ("Path to Levels folder");
     private int ExitCellPositionX { get; set; }
     private int ExitCellPositionY { get; set; }
     public char[,] Map { get; private set; }
@@ -62,8 +62,9 @@ public class MazeCore
             {
                 _stopWatch.Stop();
                 Player.Score += 50;
+                _fileHandler.Close();
+                _logHandler.Close();
                 IsMazeWorking = false;
-                Console.WriteLine("ChangePlayerPosition closed!");
                 return;
             }
 
