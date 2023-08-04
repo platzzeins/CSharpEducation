@@ -78,7 +78,7 @@ public class UserInterface
     {
         Console.Clear();
         Console.WriteLine($"Your score: {_maze.Player.Score}");
-        Console.WriteLine($"Your time (min, sec, msec): {_maze.GetElapsedTime()}");
+        Console.WriteLine($"Your time (min, sec, millisecond): {_maze.GetElapsedTime()}");
         
         Console.WriteLine("Input your name for table");
         var userName = RequestUserInput();
@@ -86,6 +86,9 @@ public class UserInterface
         _maze.WriteFinalResultsToTable(userName);
         
         Console.WriteLine("Thanks for playing!");
+        
+        _maze.LogHandler.Close();
+        _maze.FileHandler.Close();
     }
 
     public void ChangePlayerIconPosition(int prevX, int prevY)

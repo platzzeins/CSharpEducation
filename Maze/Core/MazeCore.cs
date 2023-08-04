@@ -9,9 +9,9 @@ public class MazeCore
     public readonly Player Player = new ();
     public Direction CurrentDirection = Direction.AtOnePlace;
     private readonly Stopwatch _stopWatch = new ();
-    private readonly FileHandler _fileHandler = new ();
-    private readonly LogHandler _logHandler = new ();
-    private readonly LevelFileHandler _levelFileHandler = new ("Path to Levels folder");
+    public readonly FileHandler FileHandler = new ();
+    public readonly LogHandler LogHandler = new ();
+    private readonly LevelFileHandler _levelFileHandler = new ("../../../Levels");
     private int ExitCellPositionX { get; set; }
     private int ExitCellPositionY { get; set; }
     public char[,] Map { get; private set; }
@@ -28,7 +28,7 @@ public class MazeCore
         var map = _levelFileHandler.Read(Level);
         if (map == new char[,]{})
         {
-            _logHandler.Write(LogType.Error, $"Wrong architecture of level: {Level}");
+            LogHandler.Write(LogType.Error, $"Wrong architecture of level: {Level}");
             IsMazeWorking = false;
             return;
         }
@@ -52,7 +52,7 @@ public class MazeCore
         return elapsedTime;
     }
     
-    public void WriteFinalResultsToTable(string userName) => _fileHandler.Write("Yan", Level, GetElapsedTime());
+    public void WriteFinalResultsToTable(string userName) => FileHandler.Write(userName, Level, GetElapsedTime());
 
     public void ChangePlayerPosition()
     {
@@ -62,9 +62,8 @@ public class MazeCore
             {
                 _stopWatch.Stop();
                 Player.Score += 50;
-                _fileHandler.Close();
-                _logHandler.Close();
                 IsMazeWorking = false;
+                Console.WriteLine("Press Enter");
                 return;
             }
 

@@ -5,7 +5,7 @@ namespace Maze.Core;
 public class LogHandler
 {
     private readonly string _fullPath;
-    private StreamWriter _writer;
+    private readonly StreamWriter _writer;
 
     public LogHandler(string fileName = "maze_logs.md")
     {
