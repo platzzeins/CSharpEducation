@@ -12,11 +12,6 @@ public class LogHandler
         _fullPath = fileName;
         _writer = new StreamWriter(_fullPath, true);
     }
-    
-    public LogHandler(string docPath, string fileName = "maze_logs.md")
-    {
-        _fullPath = Path.Combine(docPath, fileName);
-    }
 
     public void Write(LogType type, string info)
     {

@@ -1,3 +1,5 @@
+using Maze.MapEntities;
+
 namespace Maze.Core;
 
 public class LevelFileHandler
@@ -9,11 +11,11 @@ public class LevelFileHandler
         _path = folderPath;
     }
     
-    public char[,] Read(string level)
+    public ICell[,] ReadMapCells(string level)
     {
         var lines = File.ReadAllLines(Path.Combine(_path, level));
-        var map = new char[lines.Length, lines[0].Length];
-
+        var map = new ICell[lines.Length, lines[0].Length];
+        
         try
         {
             var lineLength = lines[0].Length;
@@ -29,20 +31,43 @@ public class LevelFileHandler
             {
                 for (var j = 0; j < lines[i].Length; j++)
                 {
-                    map[i, j] = lines[i][j];
+                    ICell cell;
+
+                    switch (lines[i][j])
+                    {
+                        case '@':
+                            cell = new Player(i, j);
+                            break;
+                        case 'X':
+                            cell = new Exit();
+                            break;
+                        case '*':
+                            cell = new Bonus();
+                            break;    
+                        case '.':
+                            cell = new Field();
+                            break;
+                        case '#':
+                            cell = new Border();
+                            break;
+                        default:
+                            cell = new Border();
+                            break;
+                    }
+                    map[i, j] = cell;
                 }
+                
             }
             Console.WriteLine("smth6");
+            
             return map;
         }
-        catch (IndexOutOfRangeException)
+        finally
         {
-            Console.WriteLine("Wrong architecture of level!!!");
-            return new char[,]{};
+            Console.WriteLine("Wrong Level Architecture!");
         }
-        
-    }
-
+    } 
+    
     public List<string> GetListOfLevels()
     {
         var levels = new List<string>();

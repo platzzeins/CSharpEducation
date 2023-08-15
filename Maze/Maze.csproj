@@ -7,4 +7,24 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <None Remove="Levels\level1" />
+      <Content Include="Levels\level1">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Levels\level2" />
+      <Content Include="Levels\level2">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Levels\level3" />
+      <Content Include="Levels\level3">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Levels\level4" />
+      <Content Include="Levels\level4">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Levels\Level5" />
+    </ItemGroup>
+
 </Project>

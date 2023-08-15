@@ -1,49 +1,42 @@
 using System.Diagnostics;
-using static Maze.Config;
 using Maze.Entities;
+using Maze.MapEntities;
 
 namespace Maze.Core;
 
 public class MazeCore
 {
-    public readonly Player Player = new ();
+    public Player Player;
     public Direction CurrentDirection = Direction.AtOnePlace;
     private readonly Stopwatch _stopWatch = new ();
     public readonly FileHandler FileHandler = new ();
     public readonly LogHandler LogHandler = new ();
-    private readonly LevelFileHandler _levelFileHandler = new ("../../../Levels");
-    private int ExitCellPositionX { get; set; }
-    private int ExitCellPositionY { get; set; }
-    public char[,] Map { get; private set; }
+    private readonly LevelFileHandler _levelFileHandler = new ("Levels");
+    public ICell[,] Map { get; private set; }
     private string Level { get; set; }
     public bool IsMazeWorking { get; private set; }
-    private bool IsPlayerWon => (Player.XPosition == ExitCellPositionX && Player.YPosition == ExitCellPositionY);
-    
 
     public void Start(string level)
     {
         _stopWatch.Start();
         IsMazeWorking = true;
         Level = level;
-        var map = _levelFileHandler.Read(Level);
-        if (map == new char[,]{})
-        {
-            LogHandler.Write(LogType.Error, $"Wrong architecture of level: {Level}");
-            IsMazeWorking = false;
-            return;
-        }
-
+        var map = _levelFileHandler.ReadMapCells(Level);
         Map = map;
-        FindExitCoordinates();
-        FindUserCoordinates();
+        
+        
+        for (var i = 0; i < Map.GetLength(0); i++)
+        {
+            for (var j = 0; j < Map.GetLength(1); j++)
+            {
+                if (Map[i, j].GetType() != typeof(Player)) continue;
+                Player = new Player(i, j);
+                Map[i, j] = new Field();
+            }
+        }
     }
 
     public List<string> Levels => _levelFileHandler.GetListOfLevels();
-
-    private bool IsCurrentCellBonus()
-    {
-        return Map[Player.YPosition, Player.XPosition] == BonusIcon;
-    }
 
     public string GetElapsedTime()
     {
@@ -52,22 +45,13 @@ public class MazeCore
         return elapsedTime;
     }
     
-    public void WriteFinalResultsToTable(string userName) => FileHandler.Write(userName, Level, GetElapsedTime());
+    public void WriteFinalResultsToTable(string userName) => FileHandler.Write(userName, Level, GetElapsedTime(), Player.TotalScore);
 
     public void ChangePlayerPosition()
     {
         while (IsMazeWorking)
         {
-            if (IsPlayerWon)
-            {
-                _stopWatch.Stop();
-                Player.Score += 50;
-                IsMazeWorking = false;
-                Console.WriteLine("Press Enter");
-                return;
-            }
-
-            if (CurrentDirection == Direction.Left || CurrentDirection == Direction.Right)
+            if (CurrentDirection is Direction.Left or Direction.Right)
             {
                 Thread.Sleep(200);
             }
@@ -76,83 +60,60 @@ public class MazeCore
                 Thread.Sleep(300);
             }
             
-
-            if (IsCurrentCellBonus())
-            {
-                Map[Player.YPosition, Player.XPosition] = FieldIcon;
-                Player.Score += 15;
-            }
-            
             if (IsNextCellBorder())
             {
                 continue;
             }
             
+            Player.TotalScore += Map[Player.Y, Player.X].Score;
+
+            if (Map[Player.Y, Player.X].GetType() == typeof(Bonus))
+            {
+                Map[Player.Y, Player.X] = new Field();
+            }
+            
             switch (CurrentDirection)
             {
                 case Direction.Left:
-                    Map[Player.YPosition, Player.XPosition] = FieldIcon;
-                    Player.XPosition--;
+                    Map[Player.Y, Player.X] = new Field();
+                    Player.X--;
                     break;
                 case Direction.Right:
-                    Map[Player.YPosition, Player.XPosition] = FieldIcon;
-                    Player.XPosition++;
+                    Map[Player.Y, Player.X] = new Field();
+                    Player.X++;
                     break;
                 case Direction.Down:
-                    Map[Player.YPosition, Player.XPosition] = FieldIcon;
-                    Player.YPosition++;
+                    Map[Player.Y, Player.X] = new Field();
+                    Player.Y++;
                     break;
                 case Direction.Up:
-                    Map[Player.YPosition, Player.XPosition] = FieldIcon;
-                    Player.YPosition--;
+                    Map[Player.Y, Player.X] = new Field();
+                    Player.Y--;
                     break;
                 default:
                     continue;
             }
+
+            if (Map[Player.Y, Player.X].GetType() != typeof(Exit)) continue;
+            _stopWatch.Stop();
+            Player.TotalScore += Map[Player.Y, Player.X].Score;
+            IsMazeWorking = false;
+            Console.WriteLine("Press Enter");
+            return;
         }
-        
     }
 
     private bool IsNextCellBorder()
     {
         switch (CurrentDirection)
         {
-            case Direction.Left when Map[Player.YPosition, Player.XPosition - 1] == BorderIcon:
-            case Direction.Right when Map[Player.YPosition, Player.XPosition + 1] == BorderIcon:
-            case Direction.Down when Map[Player.YPosition + 1, Player.XPosition ] == BorderIcon:
-            case Direction.Up when Map[Player.YPosition - 1, Player.XPosition] == BorderIcon:
+            case Direction.Left when Map[Player.Y, Player.X - 1].Weight > Player.Weight:
+            case Direction.Right when Map[Player.Y, Player.X + 1].Weight > Player.Weight:
+            case Direction.Down when Map[Player.Y + 1, Player.X ].Weight > Player.Weight:
+            case Direction.Up when Map[Player.Y - 1, Player.X].Weight > Player.Weight:
                 return true;
         }
-
+    
         return false;
     }
-
-    private void FindUserCoordinates()
-    {
-        for (var i = 0; i < Map.GetLength(0); i++)
-        {
-            for (var j = 0; j < Map.GetLength(1); j++)
-            {
-                if (Map[i, j] != PlayerIcon) continue;
-                Player.XPosition = j;
-                Player.YPosition = i;
-                return;
-            }
-        }
-    }
-
-    private void FindExitCoordinates()
-    {
-        for (var i = 0; i < Map.GetLength(0); i++)
-        {
-            for (var j = 0; j < Map.GetLength(1); j++)
-            {
-                if (Map[i, j] != ExitIcon) continue;
-                ExitCellPositionX = j;
-                ExitCellPositionY = i;
-                return;
-            }
-        }
-    }
-    
 }

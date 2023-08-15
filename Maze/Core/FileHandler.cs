@@ -11,13 +11,13 @@ public class FileHandler
         
         var isFileExists = File.Exists(fullPath);
         if (isFileExists) return;
-        _writer.WriteLine("|PlayerName|Level|Time|");
-        _writer.WriteLine("|-|-|-|");
+        _writer.WriteLine("|PlayerName|Level|Time|Score|");
+        _writer.WriteLine("|-|-|-|-|");
     }
     
-    public void Write(string playerName, string level, string time)
+    public void Write(string playerName, string level, string time, int score)
     {
-        _writer.WriteLine($"|{playerName}|{level}|{time}|");
+        _writer.WriteLine($"|{playerName}|{level}|{time}|{score}");
     }
 
     public void Close()

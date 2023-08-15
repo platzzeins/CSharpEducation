@@ -1,5 +1,5 @@
 using Maze.Entities;
-using static Maze.Config;
+using Maze.MapEntities;
 
 namespace Maze.Ui;
 using Core;
@@ -77,7 +77,7 @@ public class UserInterface
     public void PrintFinalScreen()
     {
         Console.Clear();
-        Console.WriteLine($"Your score: {_maze.Player.Score}");
+        Console.WriteLine($"Your score: {_maze.Player.TotalScore}");
         Console.WriteLine($"Your time (min, sec, millisecond): {_maze.GetElapsedTime()}");
         
         Console.WriteLine("Input your name for table");
@@ -96,10 +96,10 @@ public class UserInterface
         Console.CursorVisible = false;
         Console.ForegroundColor = ConsoleColor.White;
         Console.SetCursorPosition(prevX, prevY);
-        Console.Write(FieldIcon);
+        Console.Write(_maze.Map[prevY, prevX].Icon);
         Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.SetCursorPosition(_maze.Player.XPosition, _maze.Player.YPosition);
-        Console.Write(PlayerIcon);
+        Console.SetCursorPosition(_maze.Player.X, _maze.Player.Y);
+        Console.Write(_maze.Player.Icon);
         Console.ResetColor();
     }
     
@@ -113,21 +113,22 @@ public class UserInterface
             {
                 var cell = map[i, j];
         
-                if (j == _maze.Player.XPosition && i == _maze.Player.YPosition)
+                if (j == _maze.Player.X && i == _maze.Player.Y)
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.Write(PlayerIcon);
+                    Console.Write(_maze.Player.Icon);
                     Console.ResetColor();
                     continue;
                 }
+                
                 Console.ForegroundColor = cell switch
                 {
-                    FieldIcon => ConsoleColor.White,
-                    BorderIcon => ConsoleColor.Red,
-                    ExitIcon => ConsoleColor.Green,
+                    Field => ConsoleColor.White,
+                    Border => ConsoleColor.Red,
+                    Exit => ConsoleColor.Green,
                     _ => Console.ForegroundColor
                 };
-                Console.Write(map[i, j]);
+                Console.Write(map[i, j].Icon);
                 Console.ResetColor();
             }
             Console.WriteLine();

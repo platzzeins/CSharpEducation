@@ -28,12 +28,13 @@ namespace Maze
                 
                 while (true)
                 {
-                    if (maze.Player.XPosition == tempX && maze.Player.YPosition == tempY) continue;
+                    if (maze.Player.X == tempX && maze.Player.Y == tempY) continue;
                     ui.ChangePlayerIconPosition(tempX, tempY);
-                    tempX = maze.Player.XPosition;
-                    tempY = maze.Player.YPosition;
+                    tempX = maze.Player.X;
+                    tempY = maze.Player.Y;
                     
                 }
+                // ReSharper disable once FunctionNeverReturns
             });
             printThread.Start();
             autoMovingThread.Join();
