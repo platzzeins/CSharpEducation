@@ -1,0 +1,15 @@
+/Users/nikitakuznecov/RiderProjects/CSharpEducation/CreditCalculator/bin/Debug/net7.0/CreditCalculator
+/Users/nikitakuznecov/RiderProjects/CSharpEducation/CreditCalculator/bin/Debug/net7.0/CreditCalculator.deps.json
+/Users/nikitakuznecov/RiderProjects/CSharpEducation/CreditCalculator/bin/Debug/net7.0/CreditCalculator.runtimeconfig.json
+/Users/nikitakuznecov/RiderProjects/CSharpEducation/CreditCalculator/bin/Debug/net7.0/CreditCalculator.dll
+/Users/nikitakuznecov/RiderProjects/CSharpEducation/CreditCalculator/bin/Debug/net7.0/CreditCalculator.pdb
+/Users/nikitakuznecov/RiderProjects/CSharpEducation/CreditCalculator/obj/Debug/net7.0/CreditCalculator.csproj.AssemblyReference.cache
+/Users/nikitakuznecov/RiderProjects/CSharpEducation/CreditCalculator/obj/Debug/net7.0/CreditCalculator.GeneratedMSBuildEditorConfig.editorconfig
+/Users/nikitakuznecov/RiderProjects/CSharpEducation/CreditCalculator/obj/Debug/net7.0/CreditCalculator.AssemblyInfoInputs.cache
+/Users/nikitakuznecov/RiderProjects/CSharpEducation/CreditCalculator/obj/Debug/net7.0/CreditCalculator.AssemblyInfo.cs
+/Users/nikitakuznecov/RiderProjects/CSharpEducation/CreditCalculator/obj/Debug/net7.0/CreditCalculator.csproj.CoreCompileInputs.cache
+/Users/nikitakuznecov/RiderProjects/CSharpEducation/CreditCalculator/obj/Debug/net7.0/CreditCalculator.dll
+/Users/nikitakuznecov/RiderProjects/CSharpEducation/CreditCalculator/obj/Debug/net7.0/refint/CreditCalculator.dll
+/Users/nikitakuznecov/RiderProjects/CSharpEducation/CreditCalculator/obj/Debug/net7.0/CreditCalculator.pdb
+/Users/nikitakuznecov/RiderProjects/CSharpEducation/CreditCalculator/obj/Debug/net7.0/CreditCalculator.genruntimeconfig.cache
+/Users/nikitakuznecov/RiderProjects/CSharpEducation/CreditCalculator/obj/Debug/net7.0/ref/CreditCalculator.dll
